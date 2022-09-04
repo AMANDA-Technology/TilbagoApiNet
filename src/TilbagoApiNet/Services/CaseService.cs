@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -79,24 +80,31 @@ public class CaseService : ICaseService
     /// Add an attachment to a case on tilbago
     /// </summary>
     /// <returns>Attachment ID</returns>
-    public async Task<string?> AddAttachmentAsync(string caseId, string fileName, byte[] fileContent)
+    public async Task<string?> AddAttachmentAsync(string caseId, string fileName, Stream fileContent)
     {
-        // PUT /case/{caseId}/attachment
-        throw new NotImplementedException();
-        /*var response =
-            await _tilbagoConnectionHandler.Client.PutAsync($"case/{caseId}/status",
-                new ByteArrayContent(fileContent)); // TODO: Set Content-Disposition
-        var responseContent = await response.Content.ReadAsStringAsync();
+        using var multipartFormContent = new MultipartContent();
+
+        //Load the file and set the file's Content-Type header
+        var fileStreamContent = new StreamContent(fileContent);
+
+        //Add the file
+        multipartFormContent.Add(fileStreamContent);
+        multipartFormContent.Headers.Remove("Content-Type"); // Must be removed or 500 from server
+        multipartFormContent.Headers.Add("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+        //Send it
+        var response = await _tilbagoConnectionHandler.Client.PutAsync($"case/{caseId}/attachment", multipartFormContent);
+        var responseContent = await response.Content.ReadAsStreamAsync();
 
         // 200 OK -> attachmentId
         if (response.IsSuccessStatusCode)
         {
-            return JsonConvert.DeserializeObject<AddAttachmentResult>(responseContent)?.AttachmentId;
+            return (await JsonSerializer.DeserializeAsync<AddAttachmentResultView>(responseContent))?.AttachmentId;
         }
 
         // 401 Unauthorized = Invalid api_key
         // default = Unexpected error
-        throw new(JsonConvert.DeserializeObject<ErrorModel>(responseContent)?.Message);*/
+        throw new((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
     }
 
     /// <summary>

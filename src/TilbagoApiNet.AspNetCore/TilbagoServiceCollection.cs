@@ -32,7 +32,7 @@ namespace TilbagoApiNet.AspNetCore;
 public static class TilbagoServiceCollection
 {
     /// <summary>
-    /// Ads the configuration, handler and rest service to the services
+    /// Adds the configuration, handler and rest service to the services
     /// </summary>
     /// <param name="services"></param>
     /// <param name="apiKey"></param>

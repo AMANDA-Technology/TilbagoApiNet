@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.IO;
 using System.Threading.Tasks;
 using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
@@ -45,7 +46,7 @@ public interface ICaseService
     /// Add an attachment to a case on tilbago
     /// </summary>
     /// <returns>Attachment ID</returns>
-    public Task<string?> AddAttachmentAsync(string caseId, string fileName, byte[] fileContent);
+    public Task<string?> AddAttachmentAsync(string caseId, string fileName, Stream fileContent);
 
     /// <summary>
     /// Get the status of a case on tilbago

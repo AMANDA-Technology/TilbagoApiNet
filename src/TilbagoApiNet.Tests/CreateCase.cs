@@ -33,6 +33,7 @@ namespace TilbagoApiNet.Tests;
 public class Tests
 {
     private readonly IRestService _restService;
+    private const string FileName = "dummy.pdf";
 
     public Tests()
     {
@@ -50,7 +51,7 @@ public class Tests
     }
 
     [Test]
-    public async Task GetCreatedCase()
+    public async Task GetCreatedCaseAndAddAttachmentForNaturalPerson()
     {
         Assert.That(_restService, Is.Not.Null);
 
@@ -88,5 +89,9 @@ public class Tests
 
         var res = await _restService.CaseService.GetStatusAsync(newCase ?? throw new());
         Assert.That(res, Is.Not.Null);
+
+        var uploadRes = await _restService.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
+
+        Assert.That(uploadRes, Is.Not.Null);
     }
 }
