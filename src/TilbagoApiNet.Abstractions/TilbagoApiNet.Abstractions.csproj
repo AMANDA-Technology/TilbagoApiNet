@@ -4,7 +4,6 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>10</LangVersion>
-        <PackageVersion>0.1.0</PackageVersion>
         <Title>TilbagoApiNet</Title>
         <Authors>AMANDA Technology GmbH</Authors>
         <Description>Tilbago API Service</Description>
