@@ -27,31 +27,44 @@ using System.Threading.Tasks;
 using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
 
-namespace TilbagoApiNet.Interfaces
+namespace TilbagoApiNet.Interfaces;
+
+/// <summary>
+/// Tilbago case service endpoint
+/// </summary>
+public interface ICaseService
 {
     /// <summary>
-    /// Tilbago case service endpoint
+    /// Add a new case on tilbago
     /// </summary>
-    public interface ICaseService
-    {
-        /// <summary>
-        /// Add a new case on tilbago
-        /// </summary>
-        /// <param name="tilbagoCase"></param>
-        /// <returns>Case ID</returns>
-        public Task<string?> CreateAsync(Case tilbagoCase);
+    /// <param name="tilbagoCase"></param>
+    /// <returns>Case ID</returns>
+    public Task<string?> CreateAsync(Case tilbagoCase);
 
-        /// <summary>
-        /// Add an attachment to a case on tilbago
-        /// </summary>
-        /// <returns>Attachment ID</returns>
-        public Task<string?> AddAttachmentAsync(string caseId, string fileName, byte[] fileContent);
+    /// <summary>
+    /// Add an attachment to a case on tilbago
+    /// </summary>
+    /// <returns>Attachment ID</returns>
+    public Task<string?> AddAttachmentAsync(string caseId, string fileName, byte[] fileContent);
 
-        /// <summary>
-        /// Get the status of a case on tilbago
-        /// </summary>
-        /// <param name="caseId"></param>
-        /// <returns></returns>
-        public Task<CaseStatus?> GetStatusAsync(string caseId);
-    }
+    /// <summary>
+    /// Get the status of a case on tilbago
+    /// </summary>
+    /// <param name="caseId"></param>
+    /// <returns></returns>
+    public Task<CaseStatusView?> GetStatusAsync(string caseId);
+
+    /// <summary>
+    /// Add a new natural person case on tilbago
+    /// </summary>
+    /// <param name="createNaturalPersonCaseView"></param>
+    /// <returns>Case ID</returns>
+    public Task<string?> CreateNaturalPersonCaseAsync(CreateNaturalPersonCaseView createNaturalPersonCaseView);
+
+    /// <summary>
+    /// Add a new legal person case on tilbago
+    /// </summary>
+    /// <param name="createLegalPersonCaseView"></param>
+    /// <returns>Case ID</returns>
+    public Task<string?> CreateLegalPersonCaseAsync(CreateLegalPersonCaseView createLegalPersonCaseView);
 }

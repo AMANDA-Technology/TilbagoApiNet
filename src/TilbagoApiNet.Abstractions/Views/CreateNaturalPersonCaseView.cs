@@ -24,57 +24,79 @@ SOFTWARE.
 */
 
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using TilbagoApiNet.Abstractions.Models;
 
-namespace TilbagoApiNet.Abstractions.Models;
+namespace TilbagoApiNet.Abstractions.Views;
 
 /// <summary>
-/// Tilbago case
+/// Natural person case
 /// </summary>
-public class Case
+public class CreateNaturalPersonCaseView
 {
+    /// <summary>
+    /// Constructor with required properties
+    /// </summary>
+    /// <param name="externalRef"></param>
+    /// <param name="certificateOfLoss"></param>
+    /// <param name="debtor"></param>
+    /// <param name="claim"></param>
+    public CreateNaturalPersonCaseView(
+        string externalRef,
+        bool certificateOfLoss,
+        DebtorNaturalPersonView debtor,
+        Claim claim)
+    {
+        ExternalRef = externalRef;
+        Debtor = debtor;
+        Claim = claim;
+        CertificateOfLoss = certificateOfLoss;
+    }
+
     /// <summary>
     /// The cases external reference. Must be unique, otherwise an an exception is thrown
     /// </summary>
-    [JsonPropertyName("externalRef")]
-    public string? ExternalRef { get; set; }
+    public string ExternalRef { get; set; }
 
     /// <summary>
     /// Declares this case to be based on a certificate of loss. Possible values true/false
     /// </summary>
-    [JsonPropertyName("certificateOfLoss")]
-    public string? CertificateOfLoss { get; set; }
+    public bool CertificateOfLoss { get; set; }
 
     /// <summary>
     /// The responsible person for this case. Must be an employee of the creditor.
     /// </summary>
-    [JsonPropertyName("responsiblePerson")]
     public ResponsiblePerson? ResponsiblePerson { get; set; }
 
     /// <summary>
     /// Optional reference key to identify the calling system, write only
     /// </summary>
-    [JsonPropertyName("sourceRefKey")]
     public string? SourceRefKey { get; set; }
 
     /// <summary>
     /// Optional email address of contact person of the calling system, write only
     /// </summary>
-    [JsonPropertyName("sourceRefEmail")]
     public string? SourceRefEmail { get; set; }
 
     /// <summary>
     /// Reference to be used for payments by the office. Must fulfill check sum test, if account is not of type QR-IBAN
     /// account
     /// </summary>
-    [JsonPropertyName("payeeReference")]
     public string? PayeeReference { get; set; }
 
     /// <summary>
     /// The debtor description. Depending on the debtor properties, the debtor will be a physical or legal person
     /// </summary>
-    [JsonPropertyName("debtor")]
-    public Debtor? Debtor { get; set; }
+    public DebtorNaturalPersonView Debtor { get; set; }
+
+    /// <summary>
+    /// Claim description
+    /// </summary>
+    public Claim Claim { get; set; }
+
+    /// <summary>
+    /// Subsidiary claim descriptions
+    /// </summary>
+    public List<Claim>? SubsidiaryClaims { get; set; }
 
     /// <summary>
     /// The creditor object is optional. If it exists this expresses that the customer wishes to build a case as
@@ -82,25 +104,5 @@ public class Case
     /// exists (referenced via externalRef) and is linked to other cases, any changes to the creditor will affect those
     /// cases as well!
     /// </summary>
-    [JsonPropertyName("creditor")]
     public Creditor? Creditor { get; set; }
-
-    /// <summary>
-    /// Claim description
-    /// </summary>
-    [JsonPropertyName("claim")]
-    public Claim? Claim { get; set; }
-
-    /// <summary>
-    /// Subsidiary claim descriptions
-    /// </summary>
-    [JsonPropertyName("subsidiaryClaims")]
-    public List<Claim>? SubsidiaryClaims { get; set; }
-
-    /// <summary>
-    /// Case status: { 002 }
-    /// <br />- "002": User has to review the case before submit
-    /// </summary>
-    [JsonPropertyName("status")]
-    public string? Status { get; set; }
 }

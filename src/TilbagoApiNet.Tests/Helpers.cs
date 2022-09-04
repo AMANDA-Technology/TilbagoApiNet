@@ -23,30 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
+namespace TilbagoApiNet.Tests;
 
-namespace TilbagoApiNet.Abstractions.Views;
-
-/// <summary>
-/// Tilbago case status
-/// </summary>
-public class CaseStatus
+public static class Helpers
 {
- /// <summary>
- /// tilbago status code
- /// </summary>
- [JsonPropertyName("statusCode")]
- public string? StatusCode { get; set; }
+    private static readonly Random Random = new();
 
- /// <summary>
- /// Human readable status description
- /// </summary>
- [JsonPropertyName("description")]
- public string? Description { get; set; }
-
- /// <summary>
- /// Optional eSchKG status code (if applicable)
- /// </summary>
- [JsonPropertyName("eSchKGCode")]
- public string? ESchKgCode { get; set; }
+    public static string RandomString(int length)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return new(Enumerable.Repeat(chars, length).Select(s => s[Random.Next(s.Length)]).ToArray());
+    }
 }

@@ -23,33 +23,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using TilbagoApiNet.Interfaces;
+using System.Text.Json.Serialization;
 
-namespace TilbagoApiNet.Services;
+namespace TilbagoApiNet.Abstractions.Views;
 
 /// <summary>
-/// Configuration for accessing tilbago API
+/// Tilbago case status
 /// </summary>
-public class Configuration : IConfiguration
+public class CaseStatusView
 {
     /// <summary>
-    /// Constructor for creating the configuration
+    /// tilbago status code
     /// </summary>
-    /// <param name="apiKey"></param>
-    /// <param name="baseUri"></param>
-    public Configuration(string apiKey, string baseUri)
-    {
-        ApiKey = apiKey;
-        BaseUri = baseUri;
-    }
+    [JsonPropertyName("statusCode")]
+    public string? StatusCode { get; set; }
 
     /// <summary>
-    /// API key for accessing the service
+    /// Human readable status description
     /// </summary>
-    public string ApiKey { get; set; }
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
 
     /// <summary>
-    /// Base URI for accessing the service
+    /// Optional eSchKG status code (if applicable)
     /// </summary>
-    public string BaseUri { get; set; }
+    [JsonPropertyName("eSchKGCode")]
+    public string? ESchKgCode { get; set; }
 }

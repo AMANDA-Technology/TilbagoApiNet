@@ -26,7 +26,6 @@ SOFTWARE.
 
 using System.Text.Json.Serialization;
 
-
 namespace TilbagoApiNet.Abstractions.Enums;
 
 /// <summary>

@@ -33,38 +33,57 @@ namespace TilbagoApiNet.Abstractions.Models;
 public class Claim
 {
     /// <summary>
+    /// </summary>
+    /// <param name="externalRef"></param>
+    /// <param name="amount"></param>
+    /// <param name="reason"></param>
+    /// <param name="interestDateFrom"></param>
+    /// <param name="interestRate"></param>
+    /// <param name="collocationClass"></param>
+    public Claim(string externalRef, int amount, string reason, string interestDateFrom, string interestRate,
+        string collocationClass)
+    {
+        ExternalRef = externalRef;
+        Amount = amount;
+        Reason = reason;
+        InterestDateFrom = interestDateFrom;
+        InterestRate = interestRate;
+        CollocationClass = collocationClass;
+    }
+
+    /// <summary>
     /// The claims external reference. Must be unique, otherwise an an exception is thrown
     /// </summary>
     [JsonPropertyName("externalRef")]
-    public int? ExternalRef { get; set; }
+    public string ExternalRef { get; set; }
 
     /// <summary>
     /// Claim amount in Rappen
     /// </summary>
     [JsonPropertyName("amount")]
-    public int? Amount { get; set; }
+    public int Amount { get; set; }
 
     /// <summary>
     /// The reason for this claim
     /// </summary>
     [JsonPropertyName("reason")]
-    public string? Reason { get; set; }
+    public string Reason { get; set; }
 
     /// <summary>
     /// The interest start date, format YYYY-MM-DD
     /// </summary>
     [JsonPropertyName("interestDateFrom")]
-    public string? InterestDateFrom { get; set; }
+    public string InterestDateFrom { get; set; }
 
     /// <summary>
     /// The interest rate, supplied as string, decimal separator is point, value range 0 - 99.99999
     /// </summary>
     [JsonPropertyName("interestRate")]
-    public string? InterestRate { get; set; }
+    public string InterestRate { get; set; }
 
     /// <summary>
     /// The collocation class for the claim, must be string, allowed values are 1, 2 or 3
     /// </summary>
     [JsonPropertyName("collocationClass")]
-    public string? CollocationClass { get; set; }
+    public string CollocationClass { get; set; }
 }

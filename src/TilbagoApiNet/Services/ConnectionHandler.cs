@@ -34,20 +34,25 @@ namespace TilbagoApiNet.Services;
 public class ConnectionHandler : IConnectionHandler
 {
     /// <summary>
-    /// Holds the http client with some basic settings, to be used for all connectors
-    /// </summary>
-    public HttpClient Client { get; }
-
-    /// <summary>
     /// Constructor, generates a new http client and configures the tilbago base url
     /// </summary>
     public ConnectionHandler(IConfiguration configuration)
     {
+        var baseUri = configuration.BaseUri;
+
+        if (!baseUri.EndsWith("/"))
+            baseUri += "/";
+
         Client = new()
         {
-            BaseAddress = new(configuration.BaseUri),
+            BaseAddress = new(baseUri)
         };
 
         Client.DefaultRequestHeaders.Add("api_key", configuration.ApiKey);
     }
+
+    /// <summary>
+    /// Holds the http client with some basic settings, to be used for all connectors
+    /// </summary>
+    public HttpClient Client { get; }
 }

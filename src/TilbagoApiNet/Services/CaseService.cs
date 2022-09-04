@@ -32,95 +32,170 @@ using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
 using TilbagoApiNet.Interfaces;
 
-namespace TilbagoApiNet.Services
+namespace TilbagoApiNet.Services;
+
+/// <summary>
+/// Tilbago case service endpoint
+/// </summary>
+public class CaseService : ICaseService
 {
     /// <summary>
-    /// Tilbago case service endpoint
+    /// Tilbago connection handler
     /// </summary>
-    public class CaseService : ICaseService
+    private readonly IConnectionHandler _tilbagoConnectionHandler;
+
+    /// <summary>
+    /// Inject connection handler at construction
+    /// </summary>
+    /// <param name="tilbagoConnectionHandler"></param>
+    public CaseService(IConnectionHandler tilbagoConnectionHandler)
     {
-        /// <summary>
-        /// Tilbago connection handler
-        /// </summary>
-        private readonly IConnectionHandler _tilbagoConnectionHandler ;
+        _tilbagoConnectionHandler = tilbagoConnectionHandler;
+    }
 
-        /// <summary>
-        /// Inject connection handler at construction
-        /// </summary>
-        /// <param name="tilbagoConnectionHandler"></param>
-        public CaseService(IConnectionHandler tilbagoConnectionHandler)
+    /// <summary>
+    /// Add a new case on tilbago
+    /// </summary>
+    /// <param name="tilbagoCase"></param>
+    /// <returns>Case ID</returns>
+    public async Task<string?> CreateAsync(Case tilbagoCase)
+    {
+        // PUT /case
+        var objectSerialized = JsonSerializer.Serialize(tilbagoCase);
+        var response = await _tilbagoConnectionHandler.Client.PutAsync("case",
+            new StringContent(JsonSerializer.Serialize(tilbagoCase), Encoding.UTF8, "application/json"));
+        var responseContent = await response.Content.ReadAsStreamAsync();
+
+        // 200 OK -> case id
+        if (response.IsSuccessStatusCode)
+            return (await JsonSerializer.DeserializeAsync<CaseCreateResultView>(responseContent))?.CaseId;
+
+        // 401 Unauthorized = Invalid api_key
+        // 402 Payment Required = Insufficient account balance
+        // default = Unexpected error
+        throw new((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
+    }
+
+    /// <summary>
+    /// Add an attachment to a case on tilbago
+    /// </summary>
+    /// <returns>Attachment ID</returns>
+    public async Task<string?> AddAttachmentAsync(string caseId, string fileName, byte[] fileContent)
+    {
+        // PUT /case/{caseId}/attachment
+        throw new NotImplementedException();
+        /*var response =
+            await _tilbagoConnectionHandler.Client.PutAsync($"case/{caseId}/status",
+                new ByteArrayContent(fileContent)); // TODO: Set Content-Disposition
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        // 200 OK -> attachmentId
+        if (response.IsSuccessStatusCode)
         {
-            _tilbagoConnectionHandler = tilbagoConnectionHandler;
+            return JsonConvert.DeserializeObject<AddAttachmentResult>(responseContent)?.AttachmentId;
         }
 
-        /// <summary>
-        /// Add a new case on tilbago
-        /// </summary>
-        /// <param name="tilbagoCase"></param>
-        /// <returns>Case ID</returns>
-        public async Task<string?> CreateAsync(Case tilbagoCase)
-        {
-            // PUT /case
-            var response = await _tilbagoConnectionHandler.Client.PutAsync("/case",
-                new StringContent(JsonSerializer.Serialize(tilbagoCase), Encoding.UTF8, "application/json"));
-            var responseContent = await response.Content.ReadAsStreamAsync();
+        // 401 Unauthorized = Invalid api_key
+        // default = Unexpected error
+        throw new(JsonConvert.DeserializeObject<ErrorModel>(responseContent)?.Message);*/
+    }
 
-            // 200 OK -> case id
-            if (response.IsSuccessStatusCode)
+    /// <summary>
+    /// Get the status of a case on tilbago
+    /// </summary>
+    /// <param name="caseId"></param>
+    /// <returns></returns>
+    public async Task<CaseStatusView?> GetStatusAsync(string caseId)
+    {
+        // GET /case/{caseId}/status
+        var response = await _tilbagoConnectionHandler.Client.GetAsync($"case/{caseId}/status");
+        var responseContent = await response.Content.ReadAsStreamAsync();
+        // 200 OK -> caseStatus
+        if (response.IsSuccessStatusCode) return await JsonSerializer.DeserializeAsync<CaseStatusView>(responseContent);
+
+        // 401 Unauthorized = Invalid api_key
+        // default = Unexpected error
+        throw new((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
+    }
+
+    /// <summary>
+    /// Add a new natural person case on tilbago
+    /// </summary>
+    /// <param name="createNaturalPersonCaseView"></param>
+    /// <returns></returns>
+    public async Task<string?> CreateNaturalPersonCaseAsync(CreateNaturalPersonCaseView createNaturalPersonCaseView)
+    {
+        var caseMapped = new Case
+        {
+            Claim = createNaturalPersonCaseView.Claim,
+            Debtor = new()
             {
-                return (await JsonSerializer.DeserializeAsync<CaseCreateResult>(responseContent))?.CaseId;
-            }
+                Address = createNaturalPersonCaseView.Debtor.Address,
+                Fax = createNaturalPersonCaseView.Debtor.Fax,
+                Name = createNaturalPersonCaseView.Debtor.Name,
+                Nationality = createNaturalPersonCaseView.Debtor.Nationality,
+                Phone1 = createNaturalPersonCaseView.Debtor.Phone1,
+                Phone2 = createNaturalPersonCaseView.Debtor.Phone2,
+                Phone3 = createNaturalPersonCaseView.Debtor.Phone3,
+                Sex = createNaturalPersonCaseView.Debtor.Sex,
+                Surname = createNaturalPersonCaseView.Debtor.Surname,
+                Title = createNaturalPersonCaseView.Debtor.Title,
+                BirthName = createNaturalPersonCaseView.Debtor.BirthName,
+                EMail = createNaturalPersonCaseView.Debtor.EMail,
+                ExternalRef = createNaturalPersonCaseView.Debtor.ExternalRef,
+                PreferredLanguage = createNaturalPersonCaseView.Debtor.PreferredLanguage,
+                DateOfBirth = createNaturalPersonCaseView.Debtor.DateOfBirth
+            },
+            ExternalRef = createNaturalPersonCaseView.ExternalRef,
+            PayeeReference = createNaturalPersonCaseView.PayeeReference,
+            ResponsiblePerson = createNaturalPersonCaseView.ResponsiblePerson,
+            SubsidiaryClaims = createNaturalPersonCaseView.SubsidiaryClaims,
+            CertificateOfLoss = Convert.ToString(createNaturalPersonCaseView.CertificateOfLoss),
+            SourceRefEmail = createNaturalPersonCaseView.SourceRefEmail,
+            SourceRefKey = createNaturalPersonCaseView.SourceRefKey,
+            Creditor = createNaturalPersonCaseView.Creditor
+        };
 
-            // 401 Unauthorized = Invalid api_key
-            // 402 Payment Required = Insufficient account balance
-            // default = Unexpected error
-            throw new((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
-        }
+        return await CreateAsync(caseMapped);
+    }
 
-        /// <summary>
-        /// Add an attachment to a case on tilbago
-        /// </summary>
-        /// <returns>Attachment ID</returns>
-        public async Task<string?> AddAttachmentAsync(string caseId, string fileName, byte[] fileContent)
+    /// <summary>
+    /// Add a new legal person case on tilbago
+    /// </summary>
+    /// <param name="createLegalPersonCaseView"></param>
+    /// <returns></returns>
+    public async Task<string?> CreateLegalPersonCaseAsync(CreateLegalPersonCaseView createLegalPersonCaseView)
+    {
+        var caseMapped = new Case
         {
-            // PUT /case/{caseId}/attachment
-            throw new NotImplementedException();
-            /*var response =
-                await _tilbagoConnectionHandler.Client.PutAsync($"/case/{caseId}/status",
-                    new ByteArrayContent(fileContent)); // TODO: Set Content-Disposition
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            // 200 OK -> attachmentId
-            if (response.IsSuccessStatusCode)
+            Claim = createLegalPersonCaseView.Claim,
+            Debtor = new()
             {
-                return JsonConvert.DeserializeObject<AddAttachmentResult>(responseContent)?.AttachmentId;
-            }
+                Address = createLegalPersonCaseView.Debtor.Address,
+                Fax = createLegalPersonCaseView.Debtor.Fax,
+                Phone1 = createLegalPersonCaseView.Debtor.Phone1,
+                Phone2 = createLegalPersonCaseView.Debtor.Phone2,
+                Phone3 = createLegalPersonCaseView.Debtor.Phone3,
+                EMail = createLegalPersonCaseView.Debtor.EMail,
+                ExternalRef = createLegalPersonCaseView.Debtor.ExternalRef,
+                PreferredLanguage = createLegalPersonCaseView.Debtor.PreferredLanguage,
+                Company = createLegalPersonCaseView.Debtor.Company,
+                CompanyUid = createLegalPersonCaseView.Debtor.CompanyUid,
+                ContactPerson = createLegalPersonCaseView.Debtor.ContactPerson,
+                IsRegistered = createLegalPersonCaseView.Debtor.IsRegistered,
+                LegalSeat = createLegalPersonCaseView.Debtor.LegalSeat,
+                NameAddon = createLegalPersonCaseView.Debtor.NameAddon
+            },
+            ExternalRef = createLegalPersonCaseView.ExternalRef,
+            PayeeReference = createLegalPersonCaseView.PayeeReference,
+            ResponsiblePerson = createLegalPersonCaseView.ResponsiblePerson,
+            SubsidiaryClaims = createLegalPersonCaseView.SubsidiaryClaims,
+            CertificateOfLoss = Convert.ToString(createLegalPersonCaseView.CertificateOfLoss),
+            SourceRefEmail = createLegalPersonCaseView.SourceRefEmail,
+            SourceRefKey = createLegalPersonCaseView.SourceRefKey,
+            Creditor = createLegalPersonCaseView.Creditor
+        };
 
-            // 401 Unauthorized = Invalid api_key
-            // default = Unexpected error
-            throw new(JsonConvert.DeserializeObject<ErrorModel>(responseContent)?.Message);*/
-        }
-
-        /// <summary>
-        /// Get the status of a case on tilbago
-        /// </summary>
-        /// <param name="caseId"></param>
-        /// <returns></returns>
-        public async Task<CaseStatus?> GetStatusAsync(string caseId)
-        {
-            // GET /case/{caseId}/status
-            var response = await _tilbagoConnectionHandler.Client.GetAsync($"/case/{caseId}/status");
-            var responseContent = await response.Content.ReadAsStreamAsync();
-
-            // 200 OK -> caseStatus
-            if (response.IsSuccessStatusCode)
-            {
-                return await JsonSerializer.DeserializeAsync<CaseStatus>(responseContent);
-            }
-
-            // 401 Unauthorized = Invalid api_key
-            // default = Unexpected error
-            throw new((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
-        }
+        return await CreateAsync(caseMapped);
     }
 }

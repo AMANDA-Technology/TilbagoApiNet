@@ -23,16 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace TilbagoApiNet.Interfaces
+namespace TilbagoApiNet.Interfaces;
+
+/// <summary>
+/// Connector service to call tilbago REST API
+/// </summary>
+public interface IRestService
 {
     /// <summary>
-    /// Connector service to call tilbago REST API
+    /// Tilbago cases connector
     /// </summary>
-    public interface IRestService
-    {
-        /// <summary>
-        /// Tilbago cases connector
-        /// </summary>
-        public ICaseService CaseService { get; set; }
-    }
+    public ICaseService CaseService { get; set; }
 }

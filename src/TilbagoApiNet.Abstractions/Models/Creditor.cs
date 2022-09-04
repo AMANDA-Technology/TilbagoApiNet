@@ -94,7 +94,8 @@ public class Creditor
     public string? Nationality { get; set; }
 
     /// <summary>
-    /// UID of the legal person. Must adher to format CHE-XXX.XXX.XXX or CHEXXXXXXXXX, where X stands for digit, also must be checkable value
+    /// UID of the legal person. Must adher to format CHE-XXX.XXX.XXX or CHEXXXXXXXXX, where X stands for digit, also must
+    /// be checkable value
     /// </summary>
     [JsonPropertyName("companyUid")]
     public string? CompanyUid { get; set; }
@@ -137,28 +138,28 @@ public class Creditor
 
     /// <summary>
     /// Phone number of the creditor
-    /// <br/>Note: A phone number. Must match the following regex: /(\s(\/|-|+|(|))\d+)+/
+    /// <br />Note: A phone number. Must match the following regex: /(\s(\/|-|+|(|))\d+)+/
     /// </summary>
     [JsonPropertyName("phone1")]
     public string? Phone1 { get; set; }
 
     /// <summary>
     /// Second phone number of the creditor
-    /// <br/>Note: A phone number. Must match the following regex: /(\s(\/|-|+|(|))\d+)+/
+    /// <br />Note: A phone number. Must match the following regex: /(\s(\/|-|+|(|))\d+)+/
     /// </summary>
     [JsonPropertyName("phone2")]
     public string? Phone2 { get; set; }
 
     /// <summary>
     /// Third phone number of the creditor
-    /// <br/>Note: A phone number. Must match the following regex: /(\s(\/|-|+|(|))\d+)+/
+    /// <br />Note: A phone number. Must match the following regex: /(\s(\/|-|+|(|))\d+)+/
     /// </summary>
     [JsonPropertyName("phone3")]
     public string? Phone3 { get; set; }
 
     /// <summary>
     /// fax number of the creditor
-    /// <br/>Note: A phone number. Must match the following regex: /(\s(\/|-|+|(|))\d+)+/
+    /// <br />Note: A phone number. Must match the following regex: /(\s(\/|-|+|(|))\d+)+/
     /// </summary>
     [JsonPropertyName("fax")]
     public string? Fax { get; set; }

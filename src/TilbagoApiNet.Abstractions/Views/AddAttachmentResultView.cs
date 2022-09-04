@@ -27,7 +27,7 @@ using System.Text.Json.Serialization;
 
 namespace TilbagoApiNet.Abstractions.Views;
 
-public class AddAttachmentResult
+public class AddAttachmentResultView
 {
     /// <summary>
     /// An attachment id

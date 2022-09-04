@@ -34,15 +34,15 @@ namespace TilbagoApiNet.Services;
 public class RestService : IRestService
 {
     /// <summary>
-    /// Tilbago cases service endpoint
-    /// </summary>
-    public ICaseService CaseService { get; set; }
-
-    /// <summary>
     /// Tilbago REST service that holds a manager for calling the API
     /// </summary>
     public RestService(IConnectionHandler connectionHandler)
     {
         CaseService = new CaseService(connectionHandler);
     }
+
+    /// <summary>
+    /// Tilbago cases service endpoint
+    /// </summary>
+    public ICaseService CaseService { get; set; }
 }

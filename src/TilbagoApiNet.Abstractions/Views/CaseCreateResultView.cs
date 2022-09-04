@@ -30,7 +30,7 @@ namespace TilbagoApiNet.Abstractions.Views;
 /// <summary>
 /// Tilbago case create result (response of 'PUT /case')
 /// </summary>
-public class CaseCreateResult
+public class CaseCreateResultView
 {
     /// <summary>
     /// A case id

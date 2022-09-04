@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TilbagoApiNet.AspNetCore", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TilbagoApiNet.Abstractions", "src\TilbagoApiNet.Abstractions\TilbagoApiNet.Abstractions.csproj", "{3F419BFD-A5BF-4AD2-B3B0-C2D0827AB1CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TilbagoApiNet.Tests", "src\TilbagoApiNet.Tests\TilbagoApiNet.Tests.csproj", "{67D63FFC-9C8F-477E-81C9-B0452C9B36B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{3F419BFD-A5BF-4AD2-B3B0-C2D0827AB1CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F419BFD-A5BF-4AD2-B3B0-C2D0827AB1CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F419BFD-A5BF-4AD2-B3B0-C2D0827AB1CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67D63FFC-9C8F-477E-81C9-B0452C9B36B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67D63FFC-9C8F-477E-81C9-B0452C9B36B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67D63FFC-9C8F-477E-81C9-B0452C9B36B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67D63FFC-9C8F-477E-81C9-B0452C9B36B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

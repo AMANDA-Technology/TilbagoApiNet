@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,33 +23,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using TilbagoApiNet.Interfaces;
-
-namespace TilbagoApiNet.Services;
-
-/// <summary>
-/// Configuration for accessing tilbago API
-/// </summary>
-public class Configuration : IConfiguration
-{
-    /// <summary>
-    /// Constructor for creating the configuration
-    /// </summary>
-    /// <param name="apiKey"></param>
-    /// <param name="baseUri"></param>
-    public Configuration(string apiKey, string baseUri)
-    {
-        ApiKey = apiKey;
-        BaseUri = baseUri;
-    }
-
-    /// <summary>
-    /// API key for accessing the service
-    /// </summary>
-    public string ApiKey { get; set; }
-
-    /// <summary>
-    /// Base URI for accessing the service
-    /// </summary>
-    public string BaseUri { get; set; }
-}
+global using NUnit.Framework;
