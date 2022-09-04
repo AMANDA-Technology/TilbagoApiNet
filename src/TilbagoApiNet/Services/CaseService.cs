@@ -61,7 +61,6 @@ public class CaseService : ICaseService
     public async Task<string?> CreateAsync(Case tilbagoCase)
     {
         // PUT /case
-        var objectSerialized = JsonSerializer.Serialize(tilbagoCase);
         var response = await _tilbagoConnectionHandler.Client.PutAsync("case",
             new StringContent(JsonSerializer.Serialize(tilbagoCase), Encoding.UTF8, "application/json"));
         var responseContent = await response.Content.ReadAsStreamAsync();
