@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
 using TilbagoApiNet.Interfaces;
+using TilbagoApiNet.Interfaces.Connectors;
 
 namespace TilbagoApiNet.Services;
 
@@ -43,15 +44,15 @@ public class CaseService : ICaseService
     /// <summary>
     /// Tilbago connection handler
     /// </summary>
-    private readonly IConnectionHandler _tilbagoConnectionHandler;
+    private readonly ITilbagoConnectionHandler _tilbagoTilbagoConnectionHandler;
 
     /// <summary>
     /// Inject connection handler at construction
     /// </summary>
-    /// <param name="tilbagoConnectionHandler"></param>
-    public CaseService(IConnectionHandler tilbagoConnectionHandler)
+    /// <param name="tilbagoTilbagoConnectionHandler"></param>
+    public CaseService(ITilbagoConnectionHandler tilbagoTilbagoConnectionHandler)
     {
-        _tilbagoConnectionHandler = tilbagoConnectionHandler;
+        _tilbagoTilbagoConnectionHandler = tilbagoTilbagoConnectionHandler;
     }
 
     /// <summary>
@@ -62,7 +63,7 @@ public class CaseService : ICaseService
     public async Task<string?> CreateAsync(Case tilbagoCase)
     {
         // PUT /case
-        var response = await _tilbagoConnectionHandler.Client.PutAsync("case",
+        var response = await _tilbagoTilbagoConnectionHandler.Client.PutAsync("case",
             new StringContent(JsonSerializer.Serialize(tilbagoCase), Encoding.UTF8, "application/json"));
         var responseContent = await response.Content.ReadAsStreamAsync();
 
@@ -93,7 +94,7 @@ public class CaseService : ICaseService
         multipartFormContent.Headers.Add("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
         //Send it
-        var response = await _tilbagoConnectionHandler.Client.PutAsync($"case/{caseId}/attachment", multipartFormContent);
+        var response = await _tilbagoTilbagoConnectionHandler.Client.PutAsync($"case/{caseId}/attachment", multipartFormContent);
         var responseContent = await response.Content.ReadAsStreamAsync();
 
         // 200 OK -> attachmentId
@@ -115,7 +116,7 @@ public class CaseService : ICaseService
     public async Task<CaseStatusView?> GetStatusAsync(string caseId)
     {
         // GET /case/{caseId}/status
-        var response = await _tilbagoConnectionHandler.Client.GetAsync($"case/{caseId}/status");
+        var response = await _tilbagoTilbagoConnectionHandler.Client.GetAsync($"case/{caseId}/status");
         var responseContent = await response.Content.ReadAsStreamAsync();
         // 200 OK -> caseStatus
         if (response.IsSuccessStatusCode) return await JsonSerializer.DeserializeAsync<CaseStatusView>(responseContent);

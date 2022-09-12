@@ -16,7 +16,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TilbagoApiNet.Abstractions\TilbagoApiNet.Abstractions.csproj"/>
+        <ProjectReference Include="..\TilbagoApiNet.Abstractions\TilbagoApiNet.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

@@ -23,15 +23,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace TilbagoApiNet.Interfaces;
+using System.Net.Http;
+using TilbagoApiNet.Interfaces;
+
+namespace TilbagoApiNet.Services;
 
 /// <summary>
-/// Connector service to call tilbago REST API
+/// Connection handler to call tilbago REST API
 /// </summary>
-public interface IRestService
+public class TilbagoTilbagoConnectionHandler : ITilbagoConnectionHandler
 {
     /// <summary>
-    /// Tilbago cases connector
+    /// Constructor, generates a new http client and configures the tilbago base url
     /// </summary>
-    public ICaseService CaseService { get; set; }
+    public TilbagoTilbagoConnectionHandler(ITilbagoConfiguration tilbagoConfiguration)
+    {
+        var baseUri = tilbagoConfiguration.BaseUri;
+
+        if (!baseUri.EndsWith("/"))
+            baseUri += "/";
+
+        Client = new()
+        {
+            BaseAddress = new(baseUri)
+        };
+
+        Client.DefaultRequestHeaders.Add("api_key", tilbagoConfiguration.ApiKey);
+    }
+
+    /// <summary>
+    /// Holds the http client with some basic settings, to be used for all connectors
+    /// </summary>
+    public HttpClient Client { get; }
 }

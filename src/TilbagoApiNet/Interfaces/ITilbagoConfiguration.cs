@@ -23,26 +23,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
-using TilbagoApiNet.Interfaces;
-
-namespace TilbagoApiNet.Services;
+namespace TilbagoApiNet.Interfaces;
 
 /// <summary>
-/// Connector service to call tilbago REST API
+/// Configuration for accessing tilbago API
 /// </summary>
-public class RestService : IRestService
+public interface ITilbagoConfiguration
 {
     /// <summary>
-    /// Tilbago REST service that holds a manager for calling the API
+    /// API key for accessing the service
     /// </summary>
-    public RestService(IConnectionHandler connectionHandler)
-    {
-        CaseService = new CaseService(connectionHandler);
-    }
+    public string ApiKey { get; set; }
 
     /// <summary>
-    /// Tilbago cases service endpoint
+    /// Base URI for accessing the service
     /// </summary>
-    public ICaseService CaseService { get; set; }
+    public string BaseUri { get; set; }
 }

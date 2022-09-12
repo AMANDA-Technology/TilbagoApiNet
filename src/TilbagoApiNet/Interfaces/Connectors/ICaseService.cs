@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
 
-namespace TilbagoApiNet.Interfaces;
+namespace TilbagoApiNet.Interfaces.Connectors;
 
 /// <summary>
 /// Tilbago case service endpoint

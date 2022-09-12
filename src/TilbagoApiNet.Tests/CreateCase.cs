@@ -32,7 +32,7 @@ namespace TilbagoApiNet.Tests;
 
 public class Tests
 {
-    private readonly IRestService _restService;
+    private readonly ITilbagoApiClient _tilbagoApiClient;
     private const string FileName = "dummy.pdf";
 
     public Tests()
@@ -42,7 +42,7 @@ public class Tests
         var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ??
                       throw new("Missing TilbagoApiNet__BaseUri");
 
-        _restService = new RestService(new ConnectionHandler(new Configuration(apiKey, baseUri)));
+        _tilbagoApiClient = new TilbagoApiClient(new TilbagoTilbagoConnectionHandler(new TilbagoTilbagoConfiguration(apiKey, baseUri)));
     }
 
     [SetUp]
@@ -53,7 +53,7 @@ public class Tests
     [Test]
     public async Task GetCreatedCaseAndAddAttachmentForNaturalPerson()
     {
-        Assert.That(_restService, Is.Not.Null);
+        Assert.That(_tilbagoApiClient, Is.Not.Null);
 
         var address = new Address
         {
@@ -77,7 +77,7 @@ public class Tests
             "13",
             "1");
 
-        var newCase = await _restService.CaseService.CreateNaturalPersonCaseAsync(
+        var newCase = await _tilbagoApiClient.CaseService.CreateNaturalPersonCaseAsync(
             new(
                 Helpers.RandomString(12),
                 false,
@@ -87,10 +87,10 @@ public class Tests
 
         Assert.That(newCase, Is.Not.Null);
 
-        var res = await _restService.CaseService.GetStatusAsync(newCase ?? throw new());
+        var res = await _tilbagoApiClient.CaseService.GetStatusAsync(newCase ?? throw new());
         Assert.That(res, Is.Not.Null);
 
-        var uploadRes = await _restService.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
+        var uploadRes = await _tilbagoApiClient.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
 
         Assert.That(uploadRes, Is.Not.Null);
     }

@@ -30,7 +30,7 @@ namespace TilbagoApiNet.Interfaces;
 /// <summary>
 /// Connection handler to call tilbago REST API
 /// </summary>
-public interface IConnectionHandler
+public interface ITilbagoConnectionHandler
 {
     /// <summary>
     /// Holds the http client with some basic settings, to be used for all connectors

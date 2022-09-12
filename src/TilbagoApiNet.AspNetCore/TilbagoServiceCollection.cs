@@ -40,9 +40,9 @@ public static class TilbagoServiceCollection
     /// <returns></returns>
     public static IServiceCollection AddTilbagoServices(this IServiceCollection services, string apiKey, string baseUri)
     {
-        services.AddSingleton<IConfiguration>(new Configuration(apiKey, baseUri));
-        services.AddSingleton<IConnectionHandler, ConnectionHandler>();
-        services.AddScoped<IRestService, RestService>();
+        services.AddSingleton<ITilbagoConfiguration>(new TilbagoTilbagoConfiguration(apiKey, baseUri));
+        services.AddSingleton<ITilbagoConnectionHandler, TilbagoTilbagoConnectionHandler>();
+        services.AddScoped<ITilbagoApiClient, TilbagoApiClient>();
 
         return services;
     }
