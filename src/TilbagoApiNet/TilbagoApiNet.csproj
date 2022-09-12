@@ -13,6 +13,7 @@
         <RepositoryUrl>https://github.com/AMANDA-Technology/TilbagoApiNet</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
