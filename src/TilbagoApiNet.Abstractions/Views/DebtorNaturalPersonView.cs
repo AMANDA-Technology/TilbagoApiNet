@@ -28,30 +28,25 @@ using TilbagoApiNet.Abstractions.Models;
 
 namespace TilbagoApiNet.Abstractions.Views;
 
+/// <summary>
+/// View to create a debtor as natural person
+/// </summary>
 public class DebtorNaturalPersonView
 {
-    public DebtorNaturalPersonView(string externalRef, string name, string surname, Address address)
-    {
-        ExternalRef = externalRef;
-        Name = name;
-        Surname = surname;
-        Address = address;
-    }
-
     /// <summary>
     /// The debtors external reference. If a debtor already exists, all properties are updated
     /// </summary>
-    public string ExternalRef { get; set; }
+    public required string ExternalRef { get; set; }
 
     /// <summary>
     /// Name of the physical person
     /// </summary>
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     /// <summary>
     /// Surname of the physical person
     /// </summary>
-    public string Surname { get; set; }
+    public required string Surname { get; set; }
 
     /// <summary>
     /// Sex of the physical person { M , F , U }
@@ -115,5 +110,5 @@ public class DebtorNaturalPersonView
     /// <summary>
     /// address of the debtor
     /// </summary>
-    public Address Address { get; set; }
+    public required Address Address { get; set; }
 }

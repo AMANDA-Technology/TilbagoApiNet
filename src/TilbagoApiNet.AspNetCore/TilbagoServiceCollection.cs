@@ -29,6 +29,9 @@ using TilbagoApiNet.Services;
 
 namespace TilbagoApiNet.AspNetCore;
 
+/// <summary>
+/// Tilbago service collection extension for dependency injection
+/// </summary>
 public static class TilbagoServiceCollection
 {
     /// <summary>

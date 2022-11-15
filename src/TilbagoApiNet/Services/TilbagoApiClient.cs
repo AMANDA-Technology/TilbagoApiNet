@@ -26,6 +26,7 @@ SOFTWARE.
 
 using TilbagoApiNet.Interfaces;
 using TilbagoApiNet.Interfaces.Connectors;
+using TilbagoApiNet.Services.Connectors;
 
 namespace TilbagoApiNet.Services;
 

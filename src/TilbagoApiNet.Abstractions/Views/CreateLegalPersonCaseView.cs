@@ -23,34 +23,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
 using TilbagoApiNet.Abstractions.Models;
 
 namespace TilbagoApiNet.Abstractions.Views;
 
+/// <summary>
+/// View to create a case with debtor as legal person
+/// </summary>
 public class CreateLegalPersonCaseView
 {
-    public CreateLegalPersonCaseView(
-        string externalRef,
-        bool certificateOfLoss,
-        DebtorLegalPersonView debtor,
-        Claim claim)
-    {
-        ExternalRef = externalRef;
-        CertificateOfLoss = certificateOfLoss;
-        Debtor = debtor;
-        Claim = claim;
-    }
-
     /// <summary>
     /// The cases external reference. Must be unique, otherwise an an exception is thrown
     /// </summary>
-    public string ExternalRef { get; set; }
+    public required string ExternalRef { get; set; }
 
     /// <summary>
     /// Declares this case to be based on a certificate of loss. Possible values true/false
     /// </summary>
-    public bool CertificateOfLoss { get; set; }
+    public required bool CertificateOfLoss { get; set; }
 
     /// <summary>
     /// The responsible person for this case. Must be an employee of the creditor.
@@ -76,12 +66,12 @@ public class CreateLegalPersonCaseView
     /// <summary>
     /// The debtor description. Depending on the debtor properties, the debtor will be a physical or legal person
     /// </summary>
-    public DebtorLegalPersonView Debtor { get; set; }
+    public required DebtorLegalPersonView Debtor { get; set; }
 
     /// <summary>
     /// Claim description
     /// </summary>
-    public Claim Claim { get; set; }
+    public required Claim Claim { get; set; }
 
     /// <summary>
     /// Subsidiary claim descriptions

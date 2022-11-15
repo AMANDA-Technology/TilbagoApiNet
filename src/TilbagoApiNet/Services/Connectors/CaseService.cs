@@ -23,18 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.IO;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
 using TilbagoApiNet.Interfaces;
 using TilbagoApiNet.Interfaces.Connectors;
 
-namespace TilbagoApiNet.Services;
+namespace TilbagoApiNet.Services.Connectors;
 
 /// <summary>
 /// Tilbago case service endpoint
@@ -85,15 +81,15 @@ public class CaseService : ICaseService
     {
         using var multipartFormContent = new MultipartContent();
 
-        //Load the file and set the file's Content-Type header
+        // Load the file and set the file's Content-Type header
         var fileStreamContent = new StreamContent(fileContent);
 
-        //Add the file
+        // Add the file
         multipartFormContent.Add(fileStreamContent);
         multipartFormContent.Headers.Remove("Content-Type"); // Must be removed or 500 from server
         multipartFormContent.Headers.Add("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
-        //Send it
+        // Send it
         var response = await _tilbagoTilbagoConnectionHandler.Client.PutAsync($"case/{caseId}/attachment", multipartFormContent);
         var responseContent = await response.Content.ReadAsStreamAsync();
 

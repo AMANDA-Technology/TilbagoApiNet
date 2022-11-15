@@ -27,6 +27,9 @@ using System.Text.Json.Serialization;
 
 namespace TilbagoApiNet.Abstractions.Views;
 
+/// <summary>
+/// Tilbago add attachment result (response of 'PUT /case/{caseId}/attachment')
+/// </summary>
 public class AddAttachmentResultView
 {
     /// <summary>

@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>10</LangVersion>
+        <LangVersion>11</LangVersion>
         <Title>TilbagoApiNet</Title>
         <Authors>AMANDA Technology GmbH</Authors>
         <Description>Tilbago API Service</Description>
@@ -17,7 +18,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Text.Json" Version="6.0.5"/>
+        <PackageReference Include="System.Text.Json" Version="7.0.0" />
     </ItemGroup>
 
 </Project>

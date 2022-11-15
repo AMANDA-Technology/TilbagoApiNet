@@ -28,29 +28,20 @@ using TilbagoApiNet.Abstractions.Models;
 
 namespace TilbagoApiNet.Abstractions.Views;
 
+/// <summary>
+/// View to create a debtor as natural person
+/// </summary>
 public class DebtorLegalPersonView
 {
-    public DebtorLegalPersonView(string externalRef, string company, string companyUid, string legalSeat,
-        string contactPerson, bool isRegistered, Address address)
-    {
-        ExternalRef = externalRef;
-        Company = company;
-        CompanyUid = companyUid;
-        LegalSeat = legalSeat;
-        ContactPerson = contactPerson;
-        IsRegistered = isRegistered;
-        Address = address;
-    }
-
     /// <summary>
     /// The debtors external reference. If a debtor already exists, all properties are updated
     /// </summary>
-    public string ExternalRef { get; set; }
+    public required string ExternalRef { get; set; }
 
     /// <summary>
     /// Company name. If set, the debtor will be a legal person. Otherwise a physical person
     /// </summary>
-    public string Company { get; set; }
+    public required string Company { get; set; }
 
     /// <summary>
     /// Name addon of the legal person
@@ -61,22 +52,22 @@ public class DebtorLegalPersonView
     /// UID of the legal person. Must adher to format CHE-XXX.XXX.XXX or CHEXXXXXXXXX, where X stands for digit, also must
     /// be checkable value
     /// </summary>
-    public string CompanyUid { get; set; }
+    public required string CompanyUid { get; set; }
 
     /// <summary>
     /// Legal seat of the legal person
     /// </summary>
-    public string LegalSeat { get; set; }
+    public required string LegalSeat { get; set; }
 
     /// <summary>
     /// Contact person of the legal person
     /// </summary>
-    public string ContactPerson { get; set; }
+    public required string ContactPerson { get; set; }
 
     /// <summary>
     /// true if the actor is registered in Swiss trade register
     /// </summary>
-    public bool IsRegistered { get; set; }
+    public required bool IsRegistered { get; set; }
 
     /// <summary>
     /// Preferred language of the debtor { de , fr , it }
@@ -115,5 +106,5 @@ public class DebtorLegalPersonView
     /// <summary>
     /// address of the debtor
     /// </summary>
-    public Address Address { get; set; }
+    public required Address Address { get; set; }
 }

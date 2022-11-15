@@ -23,44 +23,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
 using TilbagoApiNet.Abstractions.Models;
 
 namespace TilbagoApiNet.Abstractions.Views;
 
 /// <summary>
-/// Natural person case
+/// View to create a case with debtor as natural person
 /// </summary>
 public class CreateNaturalPersonCaseView
 {
     /// <summary>
-    /// Constructor with required properties
-    /// </summary>
-    /// <param name="externalRef"></param>
-    /// <param name="certificateOfLoss"></param>
-    /// <param name="debtor"></param>
-    /// <param name="claim"></param>
-    public CreateNaturalPersonCaseView(
-        string externalRef,
-        bool certificateOfLoss,
-        DebtorNaturalPersonView debtor,
-        Claim claim)
-    {
-        ExternalRef = externalRef;
-        Debtor = debtor;
-        Claim = claim;
-        CertificateOfLoss = certificateOfLoss;
-    }
-
-    /// <summary>
     /// The cases external reference. Must be unique, otherwise an an exception is thrown
     /// </summary>
-    public string ExternalRef { get; set; }
+    public required string ExternalRef { get; set; }
 
     /// <summary>
     /// Declares this case to be based on a certificate of loss. Possible values true/false
     /// </summary>
-    public bool CertificateOfLoss { get; set; }
+    public required bool CertificateOfLoss { get; set; }
 
     /// <summary>
     /// The responsible person for this case. Must be an employee of the creditor.
@@ -86,12 +66,12 @@ public class CreateNaturalPersonCaseView
     /// <summary>
     /// The debtor description. Depending on the debtor properties, the debtor will be a physical or legal person
     /// </summary>
-    public DebtorNaturalPersonView Debtor { get; set; }
+    public required DebtorNaturalPersonView Debtor { get; set; }
 
     /// <summary>
     /// Claim description
     /// </summary>
-    public Claim Claim { get; set; }
+    public required Claim Claim { get; set; }
 
     /// <summary>
     /// Subsidiary claim descriptions

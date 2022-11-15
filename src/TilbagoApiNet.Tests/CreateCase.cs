@@ -37,10 +37,8 @@ public class Tests
 
     public Tests()
     {
-        var apiKey = Environment.GetEnvironmentVariable("TilbagoApiNet__ApiKey") ??
-                     throw new("Missing TilbagoApiNet__ApiKey");
-        var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ??
-                      throw new("Missing TilbagoApiNet__BaseUri");
+        var apiKey = Environment.GetEnvironmentVariable("TilbagoApiNet__ApiKey") ?? throw new("Missing TilbagoApiNet__ApiKey");
+        var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ?? throw new("Missing TilbagoApiNet__BaseUri");
 
         _tilbagoApiClient = new TilbagoApiClient(new TilbagoTilbagoConnectionHandler(new TilbagoTilbagoConfiguration(apiKey, baseUri)));
     }
@@ -48,6 +46,7 @@ public class Tests
     [SetUp]
     public void Setup()
     {
+        // Nothing to do yet
     }
 
     [Test]
@@ -63,11 +62,13 @@ public class Tests
             Zip = "3000"
         };
 
-        var debtor = new DebtorNaturalPersonView(
-            Helpers.RandomString(12),
-            "Hans",
-            "Muster",
-            address);
+        var debtor = new DebtorNaturalPersonView
+        {
+            ExternalRef = Helpers.RandomString(12),
+            Name = "Hans",
+            Surname = "Muster",
+            Address = address
+        };
 
         var claim = new Claim(
             Helpers.RandomString(12),
@@ -77,13 +78,13 @@ public class Tests
             "13",
             "1");
 
-        var newCase = await _tilbagoApiClient.CaseService.CreateNaturalPersonCaseAsync(
-            new(
-                Helpers.RandomString(12),
-                false,
-                debtor,
-                claim
-            ));
+        var newCase = await _tilbagoApiClient.CaseService.CreateNaturalPersonCaseAsync(new()
+        {
+            ExternalRef = Helpers.RandomString(12),
+            Debtor = debtor,
+            Claim = claim,
+            CertificateOfLoss = false
+        });
 
         Assert.That(newCase, Is.Not.Null);
 
