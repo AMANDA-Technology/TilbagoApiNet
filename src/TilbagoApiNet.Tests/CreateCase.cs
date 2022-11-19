@@ -40,7 +40,7 @@ public class Tests
         var apiKey = Environment.GetEnvironmentVariable("TilbagoApiNet__ApiKey") ?? throw new("Missing TilbagoApiNet__ApiKey");
         var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ?? throw new("Missing TilbagoApiNet__BaseUri");
 
-        _tilbagoApiClient = new TilbagoApiClient(new TilbagoTilbagoConnectionHandler(new TilbagoTilbagoConfiguration(apiKey, baseUri)));
+        _tilbagoApiClient = new TilbagoApiClient(new TilbagoConnectionHandler(new TilbagoConfiguration(apiKey, baseUri)));
     }
 
     [SetUp]

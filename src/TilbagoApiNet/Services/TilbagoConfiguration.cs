@@ -30,14 +30,14 @@ namespace TilbagoApiNet.Services;
 /// <summary>
 /// Configuration for accessing tilbago API
 /// </summary>
-public class TilbagoTilbagoConfiguration : ITilbagoConfiguration
+public class TilbagoConfiguration : ITilbagoConfiguration
 {
     /// <summary>
     /// Constructor for creating the configuration
     /// </summary>
     /// <param name="apiKey"></param>
     /// <param name="baseUri"></param>
-    public TilbagoTilbagoConfiguration(string apiKey, string baseUri)
+    public TilbagoConfiguration(string apiKey, string baseUri)
     {
         ApiKey = apiKey;
         BaseUri = baseUri;

@@ -43,8 +43,8 @@ public static class TilbagoServiceCollection
     /// <returns></returns>
     public static IServiceCollection AddTilbagoServices(this IServiceCollection services, string apiKey, string baseUri)
     {
-        services.AddSingleton<ITilbagoConfiguration>(new TilbagoTilbagoConfiguration(apiKey, baseUri));
-        services.AddSingleton<ITilbagoConnectionHandler, TilbagoTilbagoConnectionHandler>();
+        services.AddSingleton<ITilbagoConfiguration>(new TilbagoConfiguration(apiKey, baseUri));
+        services.AddSingleton<ITilbagoConnectionHandler, TilbagoConnectionHandler>();
         services.AddScoped<ITilbagoApiClient, TilbagoApiClient>();
 
         return services;
