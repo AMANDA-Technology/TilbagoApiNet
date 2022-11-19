@@ -2,7 +2,7 @@ name: BuildNuGetAndPublish
 
 on:
   create:
-    tags: 
+    tags:
       - '*'
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Get Build Version
       run: |
         Import-Module .\build\GetBuildVersion.psm1
@@ -30,13 +30,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.x
+        dotnet-version: 7.x
 
     - name: Restore dependencies
       run: nuget restore $SOLUTION
 
     - name: Build
       run: dotnet build $SOLUTION --configuration $BUILD_CONFIG -p:Version=$BUILD_VERSION --no-restore
-      
+
     - name: Publish
       run: nuget push **\*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
