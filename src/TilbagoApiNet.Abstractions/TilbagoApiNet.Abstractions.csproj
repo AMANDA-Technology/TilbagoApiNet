@@ -5,9 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>11</LangVersion>
-        <Title>TilbagoApiNet</Title>
+        <Title>TilbagoApiNet Abstractions</Title>
         <Authors>AMANDA Technology GmbH</Authors>
-        <Description>Tilbago API Service</Description>
+        <Description>Abstractions for Tilbago API Service</Description>
         <Copyright>AMANDA Technology GmbH</Copyright>
         <PackageProjectUrl>https://github.com/AMANDA-Technology/TilbagoApiNet</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
