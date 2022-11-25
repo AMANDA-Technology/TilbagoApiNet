@@ -70,13 +70,15 @@ public class Tests
             Address = address
         };
 
-        var claim = new Claim(
-            Helpers.RandomString(12),
-            123,
-            "didnt pay his bill",
-            "2020-12-12",
-            "13",
-            "1");
+        var claim = new Claim
+        {
+            ExternalRef = Helpers.RandomString(12),
+            Amount = 123,
+            Reason = "didnt pay his bill",
+            InterestDateFrom = "2020-12-12",
+            InterestRate = "13",
+            CollocationClass = "1"
+        };
 
         var newCase = await _tilbagoApiClient.CaseService.CreateNaturalPersonCaseAsync(new()
         {
