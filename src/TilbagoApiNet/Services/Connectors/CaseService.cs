@@ -70,7 +70,7 @@ public class CaseService : ICaseService
         // 401 Unauthorized = Invalid api_key
         // 402 Payment Required = Insufficient account balance
         // default = Unexpected error
-        throw new((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
+        throw new InvalidOperationException((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public class CaseService : ICaseService
 
         // 401 Unauthorized = Invalid api_key
         // default = Unexpected error
-        throw new((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
+        throw new InvalidOperationException((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public class CaseService : ICaseService
 
         // 401 Unauthorized = Invalid api_key
         // default = Unexpected error
-        throw new((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
+        throw new InvalidOperationException((await JsonSerializer.DeserializeAsync<ErrorModel>(responseContent))?.Message);
     }
 
     /// <summary>

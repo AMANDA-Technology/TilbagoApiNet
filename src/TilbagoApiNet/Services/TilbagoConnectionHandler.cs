@@ -39,8 +39,8 @@ public class TilbagoConnectionHandler : ITilbagoConnectionHandler
     {
         var baseUri = tilbagoConfiguration.BaseUri;
 
-        if (!baseUri.EndsWith("/"))
-            baseUri += "/";
+        if (!baseUri.EndsWith('/'))
+            baseUri += '/';
 
         Client = new()
         {
