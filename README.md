@@ -13,3 +13,5 @@ With a special thanks to tilbago AG for the handy online service for Debt enforc
 [![BuildNuGetAndPublish](https://github.com/AMANDA-Technology/TilbagoApiNet/actions/workflows/main.yml/badge.svg)](https://github.com/AMANDA-Technology/TilbagoApiNet/actions/workflows/main.yml)
 
 [![CodeQL](https://github.com/AMANDA-Technology/TilbagoApiNet/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AMANDA-Technology/TilbagoApiNet/actions/workflows/codeql-analysis.yml)
+
+[![SonarCloud](https://github.com/AMANDA-Technology/TilbagoApiNet/actions/workflows/sonar-analysis.yml/badge.svg)](https://github.com/AMANDA-Technology/TilbagoApiNet/actions/workflows/sonar-analysis.yml)
