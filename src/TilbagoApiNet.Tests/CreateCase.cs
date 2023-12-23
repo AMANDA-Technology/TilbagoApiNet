@@ -37,8 +37,8 @@ public class Tests
 
     public Tests()
     {
-        var apiKey = Environment.GetEnvironmentVariable("TilbagoApiNet__ApiKey") ?? throw new("Missing TilbagoApiNet__ApiKey");
-        var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ?? throw new("Missing TilbagoApiNet__BaseUri");
+        var apiKey = Environment.GetEnvironmentVariable("TilbagoApiNet__ApiKey") ?? throw new InvalidOperationException("Missing TilbagoApiNet__ApiKey");
+        var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ?? throw new InvalidOperationException("Missing TilbagoApiNet__BaseUri");
 
         _tilbagoApiClient = new TilbagoApiClient(new TilbagoConnectionHandler(new TilbagoConfiguration(apiKey, baseUri)));
     }
@@ -90,7 +90,7 @@ public class Tests
 
         Assert.That(newCase, Is.Not.Null);
 
-        var res = await _tilbagoApiClient.CaseService.GetStatusAsync(newCase ?? throw new());
+        var res = await _tilbagoApiClient.CaseService.GetStatusAsync(newCase ?? throw new InvalidOperationException());
         Assert.That(res, Is.Not.Null);
 
         var uploadRes = await _tilbagoApiClient.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
