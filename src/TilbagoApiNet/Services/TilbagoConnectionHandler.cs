@@ -30,13 +30,16 @@ namespace TilbagoApiNet.Services;
 /// <summary>
 /// Connection handler to call tilbago REST API
 /// </summary>
-public class TilbagoConnectionHandler : ITilbagoConnectionHandler
+public sealed class TilbagoConnectionHandler : ITilbagoConnectionHandler
 {
     /// <summary>
     /// Constructor, generates a new http client and configures the tilbago base url
     /// </summary>
     public TilbagoConnectionHandler(ITilbagoConfiguration tilbagoConfiguration)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(tilbagoConfiguration.BaseUri);
+        ArgumentException.ThrowIfNullOrWhiteSpace(tilbagoConfiguration.ApiKey);
+
         var baseUri = tilbagoConfiguration.BaseUri;
 
         if (!baseUri.EndsWith('/'))
@@ -54,4 +57,10 @@ public class TilbagoConnectionHandler : ITilbagoConnectionHandler
     /// Holds the http client with some basic settings, to be used for all connectors
     /// </summary>
     public HttpClient Client { get; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Client.Dispose();
+    }
 }

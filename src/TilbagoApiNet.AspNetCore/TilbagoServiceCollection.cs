@@ -55,7 +55,7 @@ public static class TilbagoServiceCollection
     public static IServiceCollection AddTilbagoServices(this IServiceCollection services, ITilbagoConfiguration tilbagoConfiguration)
     {
         services.AddSingleton(tilbagoConfiguration);
-        services.AddSingleton<ITilbagoConnectionHandler, TilbagoConnectionHandler>();
+        services.AddScoped<ITilbagoConnectionHandler, TilbagoConnectionHandler>();
         services.AddScoped<ITilbagoApiClient, TilbagoApiClient>();
 
         return services;

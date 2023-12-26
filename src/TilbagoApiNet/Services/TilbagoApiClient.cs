@@ -33,13 +33,19 @@ namespace TilbagoApiNet.Services;
 /// <summary>
 /// Connector service to call tilbago REST API
 /// </summary>
-public class TilbagoApiClient : ITilbagoApiClient
+public sealed class TilbagoApiClient : ITilbagoApiClient
 {
+    /// <summary>
+    /// Instance of connection handler used for all services
+    /// </summary>
+    private readonly ITilbagoConnectionHandler _tilbagoConnectionHandler;
+
     /// <summary>
     /// Tilbago REST service that holds a manager for calling the API
     /// </summary>
     public TilbagoApiClient(ITilbagoConnectionHandler tilbagoConnectionHandler)
     {
+        _tilbagoConnectionHandler = tilbagoConnectionHandler;
         CaseService = new CaseService(tilbagoConnectionHandler);
     }
 
@@ -47,4 +53,10 @@ public class TilbagoApiClient : ITilbagoApiClient
     /// Tilbago cases service endpoint
     /// </summary>
     public ICaseService CaseService { get; set; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _tilbagoConnectionHandler.Dispose();
+    }
 }

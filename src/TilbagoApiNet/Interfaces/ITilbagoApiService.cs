@@ -30,7 +30,7 @@ namespace TilbagoApiNet.Interfaces;
 /// <summary>
 /// Connector service to call tilbago REST API
 /// </summary>
-public interface ITilbagoApiClient
+public interface ITilbagoApiClient : IDisposable
 {
     /// <summary>
     /// Tilbago cases connector
