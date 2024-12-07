@@ -154,7 +154,7 @@ public class CaseService : ICaseService
             PayeeReference = createNaturalPersonCaseView.PayeeReference,
             ResponsiblePerson = createNaturalPersonCaseView.ResponsiblePerson,
             SubsidiaryClaims = createNaturalPersonCaseView.SubsidiaryClaims,
-            CertificateOfLoss = Convert.ToString(createNaturalPersonCaseView.CertificateOfLoss).ToLower(),
+            CertificateOfLoss = createNaturalPersonCaseView.CertificateOfLoss,
             SourceRefEmail = createNaturalPersonCaseView.SourceRefEmail,
             SourceRefKey = createNaturalPersonCaseView.SourceRefKey,
             Creditor = createNaturalPersonCaseView.Creditor
@@ -194,7 +194,7 @@ public class CaseService : ICaseService
             PayeeReference = createLegalPersonCaseView.PayeeReference,
             ResponsiblePerson = createLegalPersonCaseView.ResponsiblePerson,
             SubsidiaryClaims = createLegalPersonCaseView.SubsidiaryClaims,
-            CertificateOfLoss = Convert.ToString(createLegalPersonCaseView.CertificateOfLoss),
+            CertificateOfLoss = createLegalPersonCaseView.CertificateOfLoss,
             SourceRefEmail = createLegalPersonCaseView.SourceRefEmail,
             SourceRefKey = createLegalPersonCaseView.SourceRefKey,
             Creditor = createLegalPersonCaseView.Creditor

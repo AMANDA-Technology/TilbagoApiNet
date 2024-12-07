@@ -42,7 +42,7 @@ public class Case
     /// Declares this case to be based on a certificate of loss. Possible values true/false
     /// </summary>
     [JsonPropertyName("certificateOfLoss")]
-    public string? CertificateOfLoss { get; set; }
+    public bool? CertificateOfLoss { get; set; }
 
     /// <summary>
     /// The responsible person for this case. Must be an employee of the creditor.
