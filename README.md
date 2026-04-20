@@ -155,7 +155,7 @@ Console.WriteLine($"eSchKG code : {status?.ESchKgCode}");  // null if not applic
 - **API scope**: The tilbago Easy-API currently supports limited querying. The client focuses primarily on `PUT` (create case / add attachment) and `GET` (status) flows.
 - **Attachment upload quirk**: The `Content-Type` header is intentionally removed from the multipart content when uploading attachments. Including it causes a `500` response from the tilbago server.
 - **Error handling**: API errors (`4xx` / `5xx`) are raised as `InvalidOperationException` containing the message returned by tilbago.
-- **Integration tests**: Tests in `TilbagoApiNet.Tests` target the live API and require the `TilbagoApiNet__ApiKey` and `TilbagoApiNet__BaseUri` environment variables.
+- **End-to-End tests**: Tests in `TilbagoApiNet.E2eTests` target the live API and require the `TilbagoApiNet__ApiKey` and `TilbagoApiNet__BaseUri` environment variables. Unit and Integration tests run offline.
 
 ## License
 
