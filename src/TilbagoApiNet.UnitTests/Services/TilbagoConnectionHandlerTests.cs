@@ -105,7 +105,7 @@ public class TilbagoConnectionHandlerTests
         using var handler = new TilbagoConnectionHandler(_configuration);
 
         handler.Client.DefaultRequestHeaders.TryGetValues("api_key", out var values).ShouldBeTrue();
-        values!.ShouldContain(apiKey);
+        values.ShouldContain(apiKey);
     }
 
     /// <summary>

@@ -13,8 +13,12 @@ The test suite uses **NUnit** for all three projects.
 
 ### 1. TilbagoApiNet.UnitTests
 - **Scope:** Isolated service logic and domain models, without HTTP communication.
-- **Dependencies:** `NSubstitute` for mocking interfaces (e.g., `ITilbagoConnectionHandler`).
+- **Dependencies:** `NSubstitute` for mocking interfaces (e.g., `ITilbagoConnectionHandler`) and `Shouldly` for assertions.
 - **Base Class:** `ServiceTestBase` sets up the mocked connection handler.
+- **Key Files:**
+  - **`TilbagoConfigurationTests.cs`**: Verifies configuration properties and validation.
+  - **`TilbagoConnectionHandlerTests.cs`**: Validates `HttpClient` lifecycle, base URI resolution, and default headers.
+  - **`TilbagoApiClientTests.cs`**: Confirms client initialization and contract fulfillment.
 
 ### 2. TilbagoApiNet.IntegrationTests
 - **Scope:** HTTP client serialization, deserialization, and request building, mocked at the HTTP layer.

@@ -53,6 +53,6 @@ public abstract class ServiceTestBase
     [TearDown]
     public virtual void TearDown()
     {
-        ConnectionHandler?.Dispose();
+        ConnectionHandler.Dispose();
     }
 }
