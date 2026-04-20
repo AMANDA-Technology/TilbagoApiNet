@@ -51,3 +51,4 @@ source/node_modules
 !build/
 !build/GetBuildVersion.psm1
 .ai-context/
+.ai-context/
