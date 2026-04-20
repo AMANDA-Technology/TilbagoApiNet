@@ -25,51 +25,20 @@ SOFTWARE.
 
 using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
-using TilbagoApiNet.Services;
 
 namespace TilbagoApiNet.E2eTests;
 
 /// <summary>
-///     Tilbago API tests
+///     Tilbago API tests for creating cases.
 /// </summary>
-public class Tests
+public class CreateCaseTests : E2eTestBase
 {
     private const string FileName = "dummy.pdf";
-
-    /// <summary>
-    ///     Instance of tilbago API client
-    /// </summary>
-    private TilbagoApiClient? _tilbagoApiClient;
-
-    /// <summary>
-    ///     Setup
-    /// </summary>
-    /// <exception cref="InvalidOperationException"></exception>
-    [SetUp]
-    public void Setup()
-    {
-        var apiKey = Environment.GetEnvironmentVariable("TilbagoApiNet__ApiKey") ??
-                     throw new InvalidOperationException("Missing TilbagoApiNet__ApiKey");
-        var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ??
-                      throw new InvalidOperationException("Missing TilbagoApiNet__BaseUri");
-
-        _tilbagoApiClient =
-            new TilbagoApiClient(new TilbagoConnectionHandler(new TilbagoConfiguration(apiKey, baseUri)));
-    }
-
-    /// <summary>
-    ///     Teardown
-    /// </summary>
-    [TearDown]
-    public void Teardown()
-    {
-        _tilbagoApiClient?.Dispose();
-    }
 
     [Test]
     public async Task GetCreatedCaseAndAddAttachmentForNaturalPerson()
     {
-        Assert.That(_tilbagoApiClient, Is.Not.Null);
+        Assert.That(ApiClient, Is.Not.Null);
 
         var address = new Address
         {
@@ -97,7 +66,7 @@ public class Tests
             CollocationClass = "1"
         };
 
-        var newCase = await _tilbagoApiClient!.CaseService.CreateNaturalPersonCaseAsync(new CreateNaturalPersonCaseView
+        var newCase = await ApiClient.CaseService.CreateNaturalPersonCaseAsync(new CreateNaturalPersonCaseView
         {
             ExternalRef = Helpers.RandomString(12),
             Debtor = debtor,
@@ -107,11 +76,11 @@ public class Tests
 
         Assert.That(newCase, Is.Not.Null);
 
-        var res = await _tilbagoApiClient.CaseService.GetStatusAsync(newCase ?? throw new InvalidOperationException());
+        var res = await ApiClient.CaseService.GetStatusAsync(newCase ?? throw new InvalidOperationException());
         Assert.That(res, Is.Not.Null);
 
         var uploadRes =
-            await _tilbagoApiClient.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
+            await ApiClient.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
 
         Assert.That(uploadRes, Is.Not.Null);
     }
