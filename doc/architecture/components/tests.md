@@ -1,23 +1,36 @@
 ---
-title: "Component Diagram: TilbagoApiNet.Tests"
+title: "Component Diagram: Test Projects"
 tags: ["architecture", "c4-level-3", "components", "tests"]
 ---
 
-# Component Diagram: TilbagoApiNet.Tests
+# Component Diagram: Test Projects
 
-Unit and integration test coverage for the library.
+Unit, integration, and end-to-end test coverage for the library, divided into three distinct projects according to the AMANDA-Technology canonical API client pattern.
 
 ## Details
 
-The test suite uses **NUnit**. 
+The test suite uses **NUnit** for all three projects.
 
-Currently, the primary mechanism of testing involves executing real requests against the Tilbago API. This makes it an integration/E2E test suite rather than purely isolated unit tests.
+### 1. TilbagoApiNet.UnitTests
+- **Scope:** Isolated service logic and domain models, without HTTP communication.
+- **Dependencies:** `NSubstitute` for mocking interfaces (e.g., `ITilbagoConnectionHandler`).
+- **Base Class:** `ServiceTestBase` sets up the mocked connection handler.
 
-### Configuration
-Tests expect the following Environment Variables to be present on the host or CI runner:
+### 2. TilbagoApiNet.IntegrationTests
+- **Scope:** HTTP client serialization, deserialization, and request building, mocked at the HTTP layer.
+- **Dependencies:** `WireMock.Net` to spin up a local HTTP server and stub responses, `Bogus` for fake data generation, and `NSubstitute`.
+- **Base Class:** `IntegrationTestBase` manages the `WireMockServer` lifecycle per test.
+
+### 3. TilbagoApiNet.E2eTests
+- **Scope:** Real HTTP requests against the live Tilbago Easy-API.
+- **Dependencies:** `Bogus` for generating unique cases and debtors to avoid collisions.
+- **Base Class:** `E2eTestBase` reads environment variables and initializes a real `TilbagoApiClient`.
+
+#### E2E Configuration
+E2E tests expect the following Environment Variables to be present on the host or CI runner:
 - `TilbagoApiNet__ApiKey`
 - `TilbagoApiNet__BaseUri`
 
-### Key Files
+### Key E2E Files
 - **`CreateCase.cs`**: Validates the end-to-end flow of initializing the client, creating a natural person case, asserting the ID, fetching its status, and successfully uploading an attachment.
 - **`Helpers.cs`**: Provides randomization functions to ensure unique `ExternalRef` strings across test runs, avoiding case collision on the server.

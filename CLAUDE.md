@@ -12,7 +12,9 @@ TilbagoApiNet is a .NET API client implementation for the tilbago Easy-API, an o
 - `src/TilbagoApiNet`: Main library implementing the API connectors, services, and HTTP client handler.
 - `src/TilbagoApiNet.Abstractions`: Core domain models (Cases, Debtors, Creditors), views, and enums.
 - `src/TilbagoApiNet.AspNetCore`: Dependency Injection integration (`IServiceCollection` extensions) for ASP.NET Core apps.
-- `src/TilbagoApiNet.Tests`: NUnit tests for end-to-end and unit testing the client functionality.
+- `src/TilbagoApiNet.UnitTests`: NUnit tests with NSubstitute for offline logic testing.
+- `src/TilbagoApiNet.IntegrationTests`: NUnit tests with WireMock.Net to mock the Tilbago API.
+- `src/TilbagoApiNet.E2eTests`: NUnit tests targeting the live Tilbago API.
 
 ## Build Commands
 - **Restore:** `dotnet restore`
@@ -50,4 +52,4 @@ This repository follows the AMANDA-Technology "ApiNet" family of patterns:
 2. **Interface:** Create a new service interface (e.g., `INewEndpointService.cs`) in `src/TilbagoApiNet/Interfaces/Connectors/`.
 3. **Implementation:** Create the class implementing the new interface (e.g., `NewEndpointService.cs`) in `src/TilbagoApiNet/Services/Connectors/`. Inject `ITilbagoConnectionHandler` in the constructor. Use `_tilbagoConnectionHandler.Client` for HTTP calls.
 4. **Registration:** Update `ITilbagoApiClient` and `TilbagoApiClient` to expose the new service as a property (e.g., `public INewEndpointService NewEndpointService { get; set; }`). Instantiate it in the constructor.
-5. **Test:** Add a new test method in `src/TilbagoApiNet.Tests/` to verify integration against a live environment.
+5. **Test:** Add new test methods in `src/TilbagoApiNet.UnitTests/`, `src/TilbagoApiNet.IntegrationTests/`, and `src/TilbagoApiNet.E2eTests/` to verify behavior at all levels.
