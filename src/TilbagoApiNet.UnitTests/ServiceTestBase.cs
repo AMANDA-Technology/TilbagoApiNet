@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT License
 
 Copyright (c) 2022 Philip Näf <philip.naef@amanda-technology.ch>
@@ -23,15 +23,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace TilbagoApiNet.Tests;
+using NSubstitute;
+using TilbagoApiNet.Interfaces;
 
-public static class Helpers
+namespace TilbagoApiNet.UnitTests;
+
+/// <summary>
+/// Base class for unit tests providing a substituted <see cref="ITilbagoConnectionHandler"/>.
+/// </summary>
+public abstract class ServiceTestBase
 {
-    private static readonly Random Random = new();
+    /// <summary>
+    /// Mocked connection handler for isolating the unit under test from HTTP.
+    /// </summary>
+    protected ITilbagoConnectionHandler ConnectionHandler { get; private set; } = null!;
 
-    public static string RandomString(int length)
+    /// <summary>
+    /// Initialises a fresh substitute before each test.
+    /// </summary>
+    [SetUp]
+    public virtual void SetUp()
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new(Enumerable.Repeat(chars, length).Select(s => s[Random.Next(s.Length)]).ToArray());
+        ConnectionHandler = Substitute.For<ITilbagoConnectionHandler>();
+    }
+
+    /// <summary>
+    /// Disposes the substitute after each test.
+    /// </summary>
+    [TearDown]
+    public virtual void TearDown()
+    {
+        ConnectionHandler?.Dispose();
     }
 }

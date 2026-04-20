@@ -27,35 +27,38 @@ using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
 using TilbagoApiNet.Services;
 
-namespace TilbagoApiNet.Tests;
+namespace TilbagoApiNet.E2eTests;
 
 /// <summary>
-/// Tilbago API tests
+///     Tilbago API tests
 /// </summary>
 public class Tests
 {
-    /// <summary>
-    /// Instance of tilbago API client
-    /// </summary>
-    private TilbagoApiClient? _tilbagoApiClient;
-
     private const string FileName = "dummy.pdf";
 
     /// <summary>
-    /// Setup
+    ///     Instance of tilbago API client
+    /// </summary>
+    private TilbagoApiClient? _tilbagoApiClient;
+
+    /// <summary>
+    ///     Setup
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
     [SetUp]
     public void Setup()
     {
-        var apiKey = Environment.GetEnvironmentVariable("TilbagoApiNet__ApiKey") ?? throw new InvalidOperationException("Missing TilbagoApiNet__ApiKey");
-        var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ?? throw new InvalidOperationException("Missing TilbagoApiNet__BaseUri");
+        var apiKey = Environment.GetEnvironmentVariable("TilbagoApiNet__ApiKey") ??
+                     throw new InvalidOperationException("Missing TilbagoApiNet__ApiKey");
+        var baseUri = Environment.GetEnvironmentVariable("TilbagoApiNet__BaseUri") ??
+                      throw new InvalidOperationException("Missing TilbagoApiNet__BaseUri");
 
-        _tilbagoApiClient = new(new TilbagoConnectionHandler(new TilbagoConfiguration(apiKey, baseUri)));
+        _tilbagoApiClient =
+            new TilbagoApiClient(new TilbagoConnectionHandler(new TilbagoConfiguration(apiKey, baseUri)));
     }
 
     /// <summary>
-    /// Teardown
+    ///     Teardown
     /// </summary>
     [TearDown]
     public void Teardown()
@@ -94,7 +97,7 @@ public class Tests
             CollocationClass = "1"
         };
 
-        var newCase = await _tilbagoApiClient!.CaseService.CreateNaturalPersonCaseAsync(new()
+        var newCase = await _tilbagoApiClient!.CaseService.CreateNaturalPersonCaseAsync(new CreateNaturalPersonCaseView
         {
             ExternalRef = Helpers.RandomString(12),
             Debtor = debtor,
@@ -107,7 +110,8 @@ public class Tests
         var res = await _tilbagoApiClient.CaseService.GetStatusAsync(newCase ?? throw new InvalidOperationException());
         Assert.That(res, Is.Not.Null);
 
-        var uploadRes = await _tilbagoApiClient.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
+        var uploadRes =
+            await _tilbagoApiClient.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
 
         Assert.That(uploadRes, Is.Not.Null);
     }
