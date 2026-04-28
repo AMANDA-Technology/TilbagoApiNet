@@ -25,7 +25,7 @@ tags: ["ai", "readiness", "assessment"]
     - `GetStatusAsync`
     - `AddAttachmentAsync`
     - All error paths (400, 401, 500 status codes) mapping to `InvalidOperationException`.
-  - `src/TilbagoApiNet.E2eTests/CreateCase.cs` contains an End-to-End (E2E) test covering the main happy path against the live API.
+  - `src/TilbagoApiNet.E2eTests/CreateCase.cs` contains End-to-End (E2E) tests covering the main happy paths (natural and legal person cases) against the live API.
 - **What is NOT covered:**
   - `CreateAsync` (raw case creation) in `CaseService`.
   - Business logic testing for potential future services.

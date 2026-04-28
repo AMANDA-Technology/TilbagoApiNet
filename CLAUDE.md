@@ -14,7 +14,7 @@ TilbagoApiNet is a .NET API client implementation for the tilbago Easy-API, an o
 - `src/TilbagoApiNet.AspNetCore`: Dependency Injection integration (`IServiceCollection` extensions) for ASP.NET Core apps.
 - `src/TilbagoApiNet.UnitTests`: NUnit tests with NSubstitute for mocking, Bogus for fake test data, and Shouldly for assertions; connector tests stub `HttpMessageHandler` for offline logic testing.
 - `src/TilbagoApiNet.IntegrationTests`: NUnit tests with WireMock.Net to mock the Tilbago API.
-- `src/TilbagoApiNet.E2eTests`: NUnit tests targeting the live Tilbago API.
+- `src/TilbagoApiNet.E2eTests`: NUnit tests targeting the live Tilbago API, using Bogus for data generation and Shouldly for assertions.
 
 ## Build Commands
 - **Restore:** `dotnet restore`
