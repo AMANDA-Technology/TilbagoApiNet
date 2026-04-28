@@ -193,7 +193,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
         body.ShouldContain("\"debtor\"");
         body.ShouldContain("\"claim\"");
 
-        var sentCase = JsonSerializer.Deserialize<Case>(body!);
+        var sentCase = JsonSerializer.Deserialize<Case>(body);
         sentCase.ShouldNotBeNull();
         sentCase.ExternalRef.ShouldBe(view.ExternalRef);
         sentCase.CertificateOfLoss.ShouldBe(view.CertificateOfLoss);
@@ -287,7 +287,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
         body.ShouldContain("\"contactPerson\"");
         body.ShouldContain("\"isRegistered\"");
 
-        var sentCase = JsonSerializer.Deserialize<Case>(body!);
+        var sentCase = JsonSerializer.Deserialize<Case>(body);
         sentCase.ShouldNotBeNull();
         sentCase.ExternalRef.ShouldBe(view.ExternalRef);
         sentCase.CertificateOfLoss.ShouldBe(view.CertificateOfLoss);
@@ -440,7 +440,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
         var headers = request.Headers;
         headers.ShouldNotBeNull();
 
-        var headerKeys = headers!.Keys.Select(k => k.ToLowerInvariant()).ToList();
+        var headerKeys = headers.Keys.Select(k => k.ToLowerInvariant()).ToList();
         headerKeys.ShouldNotContain("content-type",
             "Tilbago returns 500 when the Content-Type header is present on the multipart request — "
             + "CaseService.AddAttachmentAsync must remove it before sending.");
