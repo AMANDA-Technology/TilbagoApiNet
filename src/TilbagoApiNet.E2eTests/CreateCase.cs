@@ -23,65 +23,139 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Globalization;
+using Bogus;
+using Shouldly;
+using TilbagoApiNet.Abstractions.Enums;
 using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
 
 namespace TilbagoApiNet.E2eTests;
 
 /// <summary>
-///     Tilbago API tests for creating cases.
+///     End-to-end tests covering the case-creation flow against the live Tilbago API: create a case, query its status
+///     and upload an attachment, for both natural-person and legal-person debtors.
 /// </summary>
+[TestFixture]
 public class CreateCaseTests : E2eTestBase
 {
     private const string FileName = "dummy.pdf";
 
+    private static readonly Faker<Address> AddressFaker = new Faker<Address>()
+        .RuleFor(x => x.Zip, f => f.Address.ZipCode("####"))
+        .RuleFor(x => x.City, f => f.Address.City())
+        .RuleFor(x => x.Street, f => f.Address.StreetName())
+        .RuleFor(x => x.StreetNumber, f => f.Address.BuildingNumber());
+
+    private static readonly Faker<Claim> ClaimFaker = new Faker<Claim>()
+        .CustomInstantiator(f => new Claim
+        {
+            ExternalRef = f.Random.AlphaNumeric(12),
+            Amount = f.Random.Int(100, 100_000_00),
+            Reason = f.Lorem.Sentence(),
+            InterestDateFrom = f.Date.Past().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            InterestRate = f.Random.Decimal(0, 10).ToString("F2", CultureInfo.InvariantCulture),
+            CollocationClass = f.PickRandom("1", "2", "3")
+        });
+
+    private static readonly Faker<DebtorNaturalPersonView> DebtorNaturalFaker = new Faker<DebtorNaturalPersonView>()
+        .CustomInstantiator(f => new DebtorNaturalPersonView
+        {
+            ExternalRef = f.Random.AlphaNumeric(12),
+            Name = f.Name.FirstName(),
+            Surname = f.Name.LastName(),
+            Sex = f.PickRandom<Sex>(),
+            DateOfBirth = f.Date.Past(60).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            Address = AddressFaker.Generate(),
+            EMail = f.Internet.Email(),
+            Phone1 = f.Phone.PhoneNumber(),
+            Nationality = "CH",
+            PreferredLanguage = Language.de
+        });
+
+    private static readonly Faker<DebtorLegalPersonView> DebtorLegalFaker = new Faker<DebtorLegalPersonView>()
+        .CustomInstantiator(f => new DebtorLegalPersonView
+        {
+            ExternalRef = f.Random.AlphaNumeric(12),
+            Company = f.Company.CompanyName(),
+            CompanyUid = $"CHE-{f.Random.Int(100, 999)}.{f.Random.Int(100, 999)}.{f.Random.Int(100, 999)}",
+            ContactPerson = f.Name.FullName(),
+            IsRegistered = true,
+            LegalSeat = f.Address.City(),
+            Address = AddressFaker.Generate(),
+            EMail = f.Internet.Email(),
+            Phone1 = f.Phone.PhoneNumber(),
+            PreferredLanguage = Language.de
+        });
+
+    private static readonly Faker<CreateNaturalPersonCaseView> NaturalCaseFaker =
+        new Faker<CreateNaturalPersonCaseView>()
+            .CustomInstantiator(f => new CreateNaturalPersonCaseView
+            {
+                ExternalRef = f.Random.AlphaNumeric(12),
+                CertificateOfLoss = false,
+                Debtor = DebtorNaturalFaker.Generate(),
+                Claim = ClaimFaker.Generate()
+            });
+
+    private static readonly Faker<CreateLegalPersonCaseView> LegalCaseFaker = new Faker<CreateLegalPersonCaseView>()
+        .CustomInstantiator(f => new CreateLegalPersonCaseView
+        {
+            ExternalRef = f.Random.AlphaNumeric(12),
+            CertificateOfLoss = false,
+            Debtor = DebtorLegalFaker.Generate(),
+            Claim = ClaimFaker.Generate()
+        });
+
+    /// <summary>
+    ///     Creates a natural-person case, queries its status and uploads an attachment, asserting each call returns a
+    ///     non-null identifier or status payload.
+    /// </summary>
     [Test]
     public async Task GetCreatedCaseAndAddAttachmentForNaturalPerson()
     {
-        Assert.That(ApiClient, Is.Not.Null);
+        var view = NaturalCaseFaker.Generate();
 
-        var address = new Address
+        var caseId = await TilbagoApiClient.CaseService.CreateNaturalPersonCaseAsync(view);
+        caseId.ShouldNotBeNullOrWhiteSpace();
+        RegisterCleanup(() =>
         {
-            City = "Bern",
-            Street = "Mainstreet",
-            StreetNumber = "12",
-            Zip = "3000"
-        };
-
-        var debtor = new DebtorNaturalPersonView
-        {
-            ExternalRef = Helpers.RandomString(12),
-            Name = "Hans",
-            Surname = "Muster",
-            Address = address
-        };
-
-        var claim = new Claim
-        {
-            ExternalRef = Helpers.RandomString(12),
-            Amount = 123,
-            Reason = "didnt pay his bill",
-            InterestDateFrom = "2020-12-12",
-            InterestRate = "13",
-            CollocationClass = "1"
-        };
-
-        var newCase = await ApiClient.CaseService.CreateNaturalPersonCaseAsync(new CreateNaturalPersonCaseView
-        {
-            ExternalRef = Helpers.RandomString(12),
-            Debtor = debtor,
-            Claim = claim,
-            CertificateOfLoss = false
+            // Tilbago API does not expose a case-deletion endpoint (see ICaseService) — created cases must be
+            // removed manually by the test environment owner. Cleanup is intentionally a no-op.
+            return Task.CompletedTask;
         });
 
-        Assert.That(newCase, Is.Not.Null);
+        var status = await TilbagoApiClient.CaseService.GetStatusAsync(caseId);
+        status.ShouldNotBeNull();
 
-        var res = await ApiClient.CaseService.GetStatusAsync(newCase ?? throw new InvalidOperationException());
-        Assert.That(res, Is.Not.Null);
+        await using var fileStream = File.OpenRead(FileName);
+        var attachmentId = await TilbagoApiClient.CaseService.AddAttachmentAsync(caseId, FileName, fileStream);
+        attachmentId.ShouldNotBeNullOrWhiteSpace();
+    }
 
-        var uploadRes =
-            await ApiClient.CaseService.AddAttachmentAsync(newCase, FileName, File.OpenRead(FileName));
+    /// <summary>
+    ///     Creates a legal-person case using a fully populated <see cref="DebtorLegalPersonView" /> payload, queries its
+    ///     status and uploads an attachment, asserting each call returns a non-null identifier or status payload.
+    /// </summary>
+    [Test]
+    public async Task GetCreatedCaseAndAddAttachmentForLegalPerson()
+    {
+        var view = LegalCaseFaker.Generate();
 
-        Assert.That(uploadRes, Is.Not.Null);
+        var caseId = await TilbagoApiClient.CaseService.CreateLegalPersonCaseAsync(view);
+        caseId.ShouldNotBeNullOrWhiteSpace();
+        RegisterCleanup(() =>
+        {
+            // Tilbago API does not expose a case-deletion endpoint (see ICaseService) — created cases must be
+            // removed manually by the test environment owner. Cleanup is intentionally a no-op.
+            return Task.CompletedTask;
+        });
+
+        var status = await TilbagoApiClient.CaseService.GetStatusAsync(caseId);
+        status.ShouldNotBeNull();
+
+        await using var fileStream = File.OpenRead(FileName);
+        var attachmentId = await TilbagoApiClient.CaseService.AddAttachmentAsync(caseId, FileName, fileStream);
+        attachmentId.ShouldNotBeNullOrWhiteSpace();
     }
 }

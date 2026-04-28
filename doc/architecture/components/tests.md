@@ -34,8 +34,8 @@ The test suite uses **NUnit** for all three projects.
 
 ### 3. TilbagoApiNet.E2eTests
 - **Scope:** Real HTTP requests against the live Tilbago Easy-API.
-- **Dependencies:** `Bogus` for generating unique cases and debtors to avoid collisions.
-- **Base Class:** `E2eTestBase` reads environment variables and initializes a real `TilbagoApiClient`.
+- **Dependencies:** `Bogus` for generating unique cases and debtors to avoid collisions, and `Shouldly` for assertions.
+- **Base Class:** `E2eTestBase` reads environment variables, initializes a real `TilbagoApiClient`, and provides a LIFO cleanup stack for resources created during test bodies.
 
 #### E2E Configuration
 E2E tests expect the following Environment Variables to be present on the host or CI runner:
@@ -43,5 +43,4 @@ E2E tests expect the following Environment Variables to be present on the host o
 - `TilbagoApiNet__BaseUri`
 
 ### Key E2E Files
-- **`CreateCase.cs`**: Validates the end-to-end flow of initializing the client, creating a natural person case, asserting the ID, fetching its status, and successfully uploading an attachment.
-- **`Helpers.cs`**: Provides randomization functions to ensure unique `ExternalRef` strings across test runs, avoiding case collision on the server.
+- **`CreateCase.cs`**: Validates the end-to-end flow of initializing the client, creating natural person and legal person cases, asserting IDs, fetching statuses, and successfully uploading attachments.
