@@ -125,11 +125,11 @@ public class CreateCaseTests : E2eTestBase
             return Task.CompletedTask;
         });
 
-        var status = await TilbagoApiClient.CaseService.GetStatusAsync(caseId!);
+        var status = await TilbagoApiClient.CaseService.GetStatusAsync(caseId);
         status.ShouldNotBeNull();
 
         await using var fileStream = File.OpenRead(FileName);
-        var attachmentId = await TilbagoApiClient.CaseService.AddAttachmentAsync(caseId!, FileName, fileStream);
+        var attachmentId = await TilbagoApiClient.CaseService.AddAttachmentAsync(caseId, FileName, fileStream);
         attachmentId.ShouldNotBeNullOrWhiteSpace();
     }
 
@@ -151,11 +151,11 @@ public class CreateCaseTests : E2eTestBase
             return Task.CompletedTask;
         });
 
-        var status = await TilbagoApiClient.CaseService.GetStatusAsync(caseId!);
+        var status = await TilbagoApiClient.CaseService.GetStatusAsync(caseId);
         status.ShouldNotBeNull();
 
         await using var fileStream = File.OpenRead(FileName);
-        var attachmentId = await TilbagoApiClient.CaseService.AddAttachmentAsync(caseId!, FileName, fileStream);
+        var attachmentId = await TilbagoApiClient.CaseService.AddAttachmentAsync(caseId, FileName, fileStream);
         attachmentId.ShouldNotBeNullOrWhiteSpace();
     }
 }
