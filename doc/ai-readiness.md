@@ -19,16 +19,16 @@ tags: ["ai", "readiness", "assessment"]
 **Assessment:**
 - **Test Framework:** NUnit across three dedicated projects (`UnitTests`, `IntegrationTests`, `E2eTests`).
 - **What IS covered:** 
-  - `src/TilbagoApiNet.E2eTests/CreateCase.cs` contains an End-to-End (E2E) test (`GetCreatedCaseAndAddAttachmentForNaturalPerson`) covering:
+  - `src/TilbagoApiNet.IntegrationTests/Services/Connectors/CaseServiceIntegrationTests.cs` provides full integration coverage for `CaseService`:
     - `CreateNaturalPersonCaseAsync`
+    - `CreateLegalPersonCaseAsync`
     - `GetStatusAsync`
     - `AddAttachmentAsync`
-  - Integration tests and unit tests infrastructure is set up to decouple offline logic from real Tilbago API testing.
+    - All error paths (400, 401, 500 status codes) mapping to `InvalidOperationException`.
+  - `src/TilbagoApiNet.E2eTests/CreateCase.cs` contains an End-to-End (E2E) test covering the main happy path against the live API.
 - **What is NOT covered:**
-  - `CreateLegalPersonCaseAsync`
-  - `CreateAsync` (raw case creation)
-  - All error paths (400, 401, 402, 500 status codes).
-  - Business logic testing is incomplete despite having the infrastructure ready.
+  - `CreateAsync` (raw case creation) in `CaseService`.
+  - Business logic testing for potential future services.
 - **Test Quality:** The project is now structured into `UnitTests`, `IntegrationTests` (with WireMock.Net), and `E2eTests` (live Tilbago API). This limits the risk of AI agents creating garbage data when running `dotnet test`, as `E2eTests` will only execute if credentials are provided in the environment.
 
 **Rate:** Baseline Coverage

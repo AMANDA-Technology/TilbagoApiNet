@@ -43,8 +43,8 @@ This repository follows the AMANDA-Technology "ApiNet" family of patterns:
 - **Core Domain Model:** `src/TilbagoApiNet.Abstractions/Models/Case.cs`
 
 ## Known Constraints
-- The `CaseService.AddAttachmentAsync` method removes the `Content-Type` header for the `MultipartContent` manually, as the server responds with a 500 error if it is included.
-- Tests currently point to real API endpoints, requiring a valid Tilbago API key to run successfully.
+- The `CaseService.AddAttachmentAsync` method removes the `Content-Type` header for the `MultipartContent` manually, as the server responds with a 500 error if it is included. This behavior is explicitly verified in `CaseServiceIntegrationTests.cs`.
+- `dotnet test` will execute Unit and Integration tests without requiring any credentials. Only `E2eTests` require a valid Tilbago API key via environment variables.
 - Unlike BexioApiNet or CashCtrlApiNet which may implement robust querying abstractions, Tilbago API currently supports limited querying and focuses mainly on `PUT` / `GET status` flows.
 
 ## Adding a New API Endpoint

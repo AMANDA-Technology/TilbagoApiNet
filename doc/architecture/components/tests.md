@@ -22,9 +22,15 @@ The test suite uses **NUnit** for all three projects.
   - **`Services/Connectors/CaseServiceTests.cs`**: Covers `CreateNaturalPersonCaseAsync`, `CreateLegalPersonCaseAsync`, `GetStatusAsync`, and `AddAttachmentAsync` on `CaseService`. Uses a stub `HttpMessageHandler` to assert request shape (HTTP verb, path, body, multipart content) and to simulate both 2xx success and 4xx/5xx error paths.
 
 ### 2. TilbagoApiNet.IntegrationTests
-- **Scope:** HTTP client serialization, deserialization, and request building, mocked at the HTTP layer.
-- **Dependencies:** `WireMock.Net` to spin up a local HTTP server and stub responses, `Bogus` for fake data generation, and `NSubstitute`.
+- **Scope:** HTTP client serialization, deserialization, and request building, mocked at the HTTP layer. Verifies wire-level behaviour including request methods, paths, header handling (like `api_key`), and response parsing.
+- **Dependencies:** `WireMock.Net` to spin up a local HTTP server and stub responses, `Bogus` for fake data generation, and `Shouldly` for assertions.
 - **Base Class:** `IntegrationTestBase` manages the `WireMockServer` lifecycle per test.
+- **Key Files:**
+  - **`Services/Connectors/CaseServiceIntegrationTests.cs`**: Comprehensive integration tests for `CaseService`.
+    - Covers `CreateNaturalPersonCaseAsync`, `CreateLegalPersonCaseAsync`, `GetStatusAsync`, and `AddAttachmentAsync`.
+    - Verifies that JSON bodies sent to the API match the expected `camelCase` format driven by `[JsonPropertyName]` annotations.
+    - Specifically asserts the **Content-Type removal quirk** in `AddAttachmentAsync` by inspecting the wire-level request to ensure the header is absent from the multipart content.
+    - Validates error mapping by mocking 4xx/5xx responses and asserting that `InvalidOperationException` is thrown with the correct message.
 
 ### 3. TilbagoApiNet.E2eTests
 - **Scope:** Real HTTP requests against the live Tilbago Easy-API.
