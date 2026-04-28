@@ -418,10 +418,10 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
         sentCase.SourceRefEmail.ShouldBe(view.SourceRefEmail);
 
         sentCase.ResponsiblePerson.ShouldNotBeNull();
-        sentCase.ResponsiblePerson!.Email.ShouldBe(view.ResponsiblePerson!.Email);
+        sentCase.ResponsiblePerson.Email.ShouldBe(view.ResponsiblePerson!.Email);
 
         sentCase.SubsidiaryClaims.ShouldNotBeNull();
-        sentCase.SubsidiaryClaims!.Count.ShouldBe(view.SubsidiaryClaims!.Count);
+        sentCase.SubsidiaryClaims.Count.ShouldBe(view.SubsidiaryClaims!.Count);
         for (var i = 0; i < view.SubsidiaryClaims.Count; i++)
             AssertClaimMapped(sentCase.SubsidiaryClaims[i], view.SubsidiaryClaims[i]);
 
@@ -443,10 +443,10 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
         sentCase.SourceRefEmail.ShouldBe(view.SourceRefEmail);
 
         sentCase.ResponsiblePerson.ShouldNotBeNull();
-        sentCase.ResponsiblePerson!.Email.ShouldBe(view.ResponsiblePerson!.Email);
+        sentCase.ResponsiblePerson.Email.ShouldBe(view.ResponsiblePerson!.Email);
 
         sentCase.SubsidiaryClaims.ShouldNotBeNull();
-        sentCase.SubsidiaryClaims!.Count.ShouldBe(view.SubsidiaryClaims!.Count);
+        sentCase.SubsidiaryClaims.Count.ShouldBe(view.SubsidiaryClaims!.Count);
         for (var i = 0; i < view.SubsidiaryClaims.Count; i++)
             AssertClaimMapped(sentCase.SubsidiaryClaims[i], view.SubsidiaryClaims[i]);
 
@@ -462,7 +462,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
     private static void AssertNaturalDebtorMapped(Debtor? actual, DebtorNaturalPersonView expected)
     {
         actual.ShouldNotBeNull();
-        actual!.ExternalRef.ShouldBe(expected.ExternalRef);
+        actual.ExternalRef.ShouldBe(expected.ExternalRef);
         actual.Name.ShouldBe(expected.Name);
         actual.Surname.ShouldBe(expected.Surname);
         actual.Sex.ShouldBe(expected.Sex);
@@ -486,7 +486,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
     private static void AssertLegalDebtorMapped(Debtor? actual, DebtorLegalPersonView expected)
     {
         actual.ShouldNotBeNull();
-        actual!.ExternalRef.ShouldBe(expected.ExternalRef);
+        actual.ExternalRef.ShouldBe(expected.ExternalRef);
         actual.Company.ShouldBe(expected.Company);
         actual.CompanyUid.ShouldBe(expected.CompanyUid);
         actual.NameAddon.ShouldBe(expected.NameAddon);
@@ -509,7 +509,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
     {
         actual.ShouldNotBeNull();
         expected.ShouldNotBeNull();
-        actual!.Zip.ShouldBe(expected!.Zip);
+        actual.Zip.ShouldBe(expected.Zip);
         actual.Pob.ShouldBe(expected.Pob);
         actual.City.ShouldBe(expected.City);
         actual.Street.ShouldBe(expected.Street);
@@ -522,7 +522,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
     private static void AssertClaimMapped(Claim? actual, Claim expected)
     {
         actual.ShouldNotBeNull();
-        actual!.ExternalRef.ShouldBe(expected.ExternalRef);
+        actual.ExternalRef.ShouldBe(expected.ExternalRef);
         actual.Amount.ShouldBe(expected.Amount);
         actual.Reason.ShouldBe(expected.Reason);
         actual.InterestDateFrom.ShouldBe(expected.InterestDateFrom);
@@ -538,7 +538,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
     {
         actual.ShouldNotBeNull();
         expected.ShouldNotBeNull();
-        actual!.ExternalRef.ShouldBe(expected!.ExternalRef);
+        actual.ExternalRef.ShouldBe(expected.ExternalRef);
         actual.TradeRegisterUrl.ShouldBe(expected.TradeRegisterUrl);
         actual.Iban.ShouldBe(expected.Iban);
         actual.Name.ShouldBe(expected.Name);

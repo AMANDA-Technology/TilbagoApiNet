@@ -235,16 +235,16 @@ public class TilbagoServiceCollectionTests
     {
         var configurationDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ITilbagoConfiguration));
         configurationDescriptor.ShouldNotBeNull();
-        configurationDescriptor!.Lifetime.ShouldBe(ServiceLifetime.Singleton);
+        configurationDescriptor.Lifetime.ShouldBe(ServiceLifetime.Singleton);
 
         var connectionHandlerDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ITilbagoConnectionHandler));
         connectionHandlerDescriptor.ShouldNotBeNull();
-        connectionHandlerDescriptor!.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+        connectionHandlerDescriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
         connectionHandlerDescriptor.ImplementationType.ShouldBe(typeof(TilbagoConnectionHandler));
 
         var apiClientDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ITilbagoApiClient));
         apiClientDescriptor.ShouldNotBeNull();
-        apiClientDescriptor!.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+        apiClientDescriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
         apiClientDescriptor.ImplementationType.ShouldBe(typeof(TilbagoApiClient));
     }
 }
