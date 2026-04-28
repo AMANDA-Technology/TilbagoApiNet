@@ -31,6 +31,6 @@ Explore the C4 model documentation below to understand the system at different l
    - [TilbagoApiNet (Main Library)](components/tilbagoapinet.md)
    - [TilbagoApiNet.Abstractions](components/abstractions.md)
    - [TilbagoApiNet.AspNetCore](components/aspnetcore.md)
-   - [Test Projects (Unit, Integration, E2E)](components/tests.md)
+   - [Test Projects (TestHelpers, Unit, AspNetCore.UnitTests, Integration, E2E)](components/tests.md)
 4. **[Architecture Decision Records (ADRs)](decisions/)**: Log of significant technical decisions.
 5. **[Glossary](glossary.md)**: Domain terminology definition.

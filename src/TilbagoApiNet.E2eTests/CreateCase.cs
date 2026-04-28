@@ -23,12 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Globalization;
-using Bogus;
 using Shouldly;
-using TilbagoApiNet.Abstractions.Enums;
-using TilbagoApiNet.Abstractions.Models;
-using TilbagoApiNet.Abstractions.Views;
+using TilbagoApiNet.TestHelpers;
 
 namespace TilbagoApiNet.E2eTests;
 
@@ -41,72 +37,6 @@ public class CreateCaseTests : E2eTestBase
 {
     private const string FileName = "dummy.pdf";
 
-    private static readonly Faker<Address> AddressFaker = new Faker<Address>()
-        .RuleFor(x => x.Zip, f => f.Address.ZipCode("####"))
-        .RuleFor(x => x.City, f => f.Address.City())
-        .RuleFor(x => x.Street, f => f.Address.StreetName())
-        .RuleFor(x => x.StreetNumber, f => f.Address.BuildingNumber());
-
-    private static readonly Faker<Claim> ClaimFaker = new Faker<Claim>()
-        .CustomInstantiator(f => new Claim
-        {
-            ExternalRef = f.Random.AlphaNumeric(12),
-            Amount = f.Random.Int(100, 100_000_00),
-            Reason = f.Lorem.Sentence(),
-            InterestDateFrom = f.Date.Past().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-            InterestRate = f.Random.Decimal(0, 10).ToString("F2", CultureInfo.InvariantCulture),
-            CollocationClass = f.PickRandom("1", "2", "3")
-        });
-
-    private static readonly Faker<DebtorNaturalPersonView> DebtorNaturalFaker = new Faker<DebtorNaturalPersonView>()
-        .CustomInstantiator(f => new DebtorNaturalPersonView
-        {
-            ExternalRef = f.Random.AlphaNumeric(12),
-            Name = f.Name.FirstName(),
-            Surname = f.Name.LastName(),
-            Sex = f.PickRandom<Sex>(),
-            DateOfBirth = f.Date.Past(60).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-            Address = AddressFaker.Generate(),
-            EMail = f.Internet.Email(),
-            Phone1 = f.Phone.PhoneNumber(),
-            Nationality = "CH",
-            PreferredLanguage = Language.de
-        });
-
-    private static readonly Faker<DebtorLegalPersonView> DebtorLegalFaker = new Faker<DebtorLegalPersonView>()
-        .CustomInstantiator(f => new DebtorLegalPersonView
-        {
-            ExternalRef = f.Random.AlphaNumeric(12),
-            Company = f.Company.CompanyName(),
-            CompanyUid = $"CHE-{f.Random.Int(100, 999)}.{f.Random.Int(100, 999)}.{f.Random.Int(100, 999)}",
-            ContactPerson = f.Name.FullName(),
-            IsRegistered = true,
-            LegalSeat = f.Address.City(),
-            Address = AddressFaker.Generate(),
-            EMail = f.Internet.Email(),
-            Phone1 = f.Phone.PhoneNumber(),
-            PreferredLanguage = Language.de
-        });
-
-    private static readonly Faker<CreateNaturalPersonCaseView> NaturalCaseFaker =
-        new Faker<CreateNaturalPersonCaseView>()
-            .CustomInstantiator(f => new CreateNaturalPersonCaseView
-            {
-                ExternalRef = f.Random.AlphaNumeric(12),
-                CertificateOfLoss = false,
-                Debtor = DebtorNaturalFaker.Generate(),
-                Claim = ClaimFaker.Generate()
-            });
-
-    private static readonly Faker<CreateLegalPersonCaseView> LegalCaseFaker = new Faker<CreateLegalPersonCaseView>()
-        .CustomInstantiator(f => new CreateLegalPersonCaseView
-        {
-            ExternalRef = f.Random.AlphaNumeric(12),
-            CertificateOfLoss = false,
-            Debtor = DebtorLegalFaker.Generate(),
-            Claim = ClaimFaker.Generate()
-        });
-
     /// <summary>
     ///     Creates a natural-person case, queries its status and uploads an attachment, asserting each call returns a
     ///     non-null identifier or status payload.
@@ -114,7 +44,7 @@ public class CreateCaseTests : E2eTestBase
     [Test]
     public async Task GetCreatedCaseAndAddAttachmentForNaturalPerson()
     {
-        var view = NaturalCaseFaker.Generate();
+        var view = TilbagoFakers.NaturalCaseFaker.Generate();
 
         var caseId = await TilbagoApiClient.CaseService.CreateNaturalPersonCaseAsync(view);
         caseId.ShouldNotBeNullOrWhiteSpace();
@@ -134,13 +64,14 @@ public class CreateCaseTests : E2eTestBase
     }
 
     /// <summary>
-    ///     Creates a legal-person case using a fully populated <see cref="DebtorLegalPersonView" /> payload, queries its
-    ///     status and uploads an attachment, asserting each call returns a non-null identifier or status payload.
+    ///     Creates a legal-person case using a fully populated <see cref="Abstractions.Views.DebtorLegalPersonView" />
+    ///     payload, queries its status and uploads an attachment, asserting each call returns a non-null identifier or
+    ///     status payload.
     /// </summary>
     [Test]
     public async Task GetCreatedCaseAndAddAttachmentForLegalPerson()
     {
-        var view = LegalCaseFaker.Generate();
+        var view = TilbagoFakers.LegalCaseFaker.Generate();
 
         var caseId = await TilbagoApiClient.CaseService.CreateLegalPersonCaseAsync(view);
         caseId.ShouldNotBeNullOrWhiteSpace();
