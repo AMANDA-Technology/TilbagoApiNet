@@ -23,16 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Globalization;
 using System.Net;
 using System.Text.Json;
-using Bogus;
 using Shouldly;
-using TilbagoApiNet.Abstractions.Enums;
 using TilbagoApiNet.Abstractions.Models;
 using TilbagoApiNet.Abstractions.Views;
 using TilbagoApiNet.Services;
 using TilbagoApiNet.Services.Connectors;
+using TilbagoApiNet.TestHelpers;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using Case = TilbagoApiNet.Abstractions.Models.Case;
@@ -49,73 +47,6 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
 {
     private const string ApiPathPrefix = "/api/v1";
     private const string ApiKey = "test-api-key";
-
-    private static readonly Faker<Address> AddressFaker = new Faker<Address>()
-        .RuleFor(x => x.Zip, f => f.Address.ZipCode("####"))
-        .RuleFor(x => x.City, f => f.Address.City())
-        .RuleFor(x => x.Street, f => f.Address.StreetName())
-        .RuleFor(x => x.StreetNumber, f => f.Address.BuildingNumber())
-        .RuleFor(x => x.Pob, f => f.Random.Replace("####"));
-
-    private static readonly Faker<Claim> ClaimFaker = new Faker<Claim>()
-        .CustomInstantiator(f => new Claim
-        {
-            ExternalRef = f.Random.AlphaNumeric(12),
-            Amount = f.Random.Int(100, 100_000_00),
-            Reason = f.Lorem.Sentence(),
-            InterestDateFrom = f.Date.Past().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-            InterestRate = f.Random.Decimal(0, 10).ToString("F2", CultureInfo.InvariantCulture),
-            CollocationClass = f.PickRandom("1", "2", "3")
-        });
-
-    private static readonly Faker<DebtorNaturalPersonView> DebtorNaturalFaker = new Faker<DebtorNaturalPersonView>()
-        .CustomInstantiator(f => new DebtorNaturalPersonView
-        {
-            ExternalRef = f.Random.AlphaNumeric(12),
-            Name = f.Name.FirstName(),
-            Surname = f.Name.LastName(),
-            Sex = f.PickRandom<Sex>(),
-            DateOfBirth = f.Date.Past(60).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-            Address = AddressFaker.Generate(),
-            EMail = f.Internet.Email(),
-            Phone1 = f.Phone.PhoneNumber(),
-            Nationality = "CH",
-            PreferredLanguage = Language.de
-        });
-
-    private static readonly Faker<DebtorLegalPersonView> DebtorLegalFaker = new Faker<DebtorLegalPersonView>()
-        .CustomInstantiator(f => new DebtorLegalPersonView
-        {
-            ExternalRef = f.Random.AlphaNumeric(12),
-            Company = f.Company.CompanyName(),
-            CompanyUid = $"CHE-{f.Random.Int(100, 999)}.{f.Random.Int(100, 999)}.{f.Random.Int(100, 999)}",
-            ContactPerson = f.Name.FullName(),
-            IsRegistered = true,
-            LegalSeat = f.Address.City(),
-            Address = AddressFaker.Generate(),
-            EMail = f.Internet.Email(),
-            Phone1 = f.Phone.PhoneNumber(),
-            PreferredLanguage = Language.de
-        });
-
-    private static readonly Faker<CreateNaturalPersonCaseView> NaturalCaseFaker =
-        new Faker<CreateNaturalPersonCaseView>()
-            .CustomInstantiator(f => new CreateNaturalPersonCaseView
-            {
-                ExternalRef = f.Random.AlphaNumeric(12),
-                CertificateOfLoss = false,
-                Debtor = DebtorNaturalFaker.Generate(),
-                Claim = ClaimFaker.Generate()
-            });
-
-    private static readonly Faker<CreateLegalPersonCaseView> LegalCaseFaker = new Faker<CreateLegalPersonCaseView>()
-        .CustomInstantiator(f => new CreateLegalPersonCaseView
-        {
-            ExternalRef = f.Random.AlphaNumeric(12),
-            CertificateOfLoss = false,
-            Debtor = DebtorLegalFaker.Generate(),
-            Claim = ClaimFaker.Generate()
-        });
 
     private TilbagoApiClient _apiClient = null!;
 
@@ -151,7 +82,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
                 .WithStatusCode((int)HttpStatusCode.OK)
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(JsonSerializer.Serialize(new CaseCreateResultView { CaseId = expectedCaseId })));
-        var view = NaturalCaseFaker.Generate();
+        var view = TilbagoFakers.NaturalCaseFaker.Generate();
 
         var result = await _apiClient.CaseService.CreateNaturalPersonCaseAsync(view);
 
@@ -161,12 +92,15 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
     /// <summary>
     ///     Verifies the request reaches WireMock as a PUT to <c>/api/v1/case</c>, with the api_key header populated and a
     ///     body whose JSON property names match the <c>[JsonPropertyName]</c> annotations on <see cref="Case" />,
-    ///     <see cref="Debtor" /> and <see cref="Claim" />.
+    ///     <see cref="Debtor" /> and <see cref="Claim" />. Asserts every property of the natural-person view —
+    ///     required and optional — including <c>Fax</c>, <c>Phone2</c>, <c>Phone3</c>, <c>Title</c>, <c>BirthName</c>,
+    ///     <c>PreferredLanguage</c>, <c>PayeeReference</c>, <c>ResponsiblePerson</c>, <c>SubsidiaryClaims</c>,
+    ///     <c>SourceRefEmail</c>, <c>SourceRefKey</c> and <c>Creditor</c>.
     /// </summary>
     [Test]
     public async Task CreateNaturalPersonCaseAsync_OnSuccess_SendsPutWithCamelCaseBodyAndApiKeyHeader()
     {
-        var view = NaturalCaseFaker.Generate();
+        var view = TilbagoFakers.NaturalCaseFaker.Generate();
         Server
             .Given(Request.Create().WithPath($"{ApiPathPrefix}/case").UsingPut())
             .RespondWith(Response.Create()
@@ -192,26 +126,22 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
         body.ShouldContain("\"certificateOfLoss\"");
         body.ShouldContain("\"debtor\"");
         body.ShouldContain("\"claim\"");
+        body.ShouldContain("\"responsiblePerson\"");
+        body.ShouldContain("\"subsidiaryClaims\"");
+        body.ShouldContain("\"sourceRefEmail\"");
+        body.ShouldContain("\"sourceRefKey\"");
+        body.ShouldContain("\"payeeReference\"");
+        body.ShouldContain("\"creditor\"");
+        body.ShouldContain("\"phone2\"");
+        body.ShouldContain("\"phone3\"");
+        body.ShouldContain("\"fax\"");
+        body.ShouldContain("\"title\"");
+        body.ShouldContain("\"birthName\"");
+        body.ShouldContain("\"preferredLanguage\"");
 
         var sentCase = JsonSerializer.Deserialize<Case>(body);
         sentCase.ShouldNotBeNull();
-        sentCase.ExternalRef.ShouldBe(view.ExternalRef);
-        sentCase.CertificateOfLoss.ShouldBe(view.CertificateOfLoss);
-        sentCase.Debtor.ShouldNotBeNull();
-        sentCase.Debtor!.ExternalRef.ShouldBe(view.Debtor.ExternalRef);
-        sentCase.Debtor.Name.ShouldBe(view.Debtor.Name);
-        sentCase.Debtor.Surname.ShouldBe(view.Debtor.Surname);
-        sentCase.Debtor.DateOfBirth.ShouldBe(view.Debtor.DateOfBirth);
-        sentCase.Debtor.Sex.ShouldBe(view.Debtor.Sex);
-        sentCase.Debtor.Nationality.ShouldBe(view.Debtor.Nationality);
-        sentCase.Debtor.EMail.ShouldBe(view.Debtor.EMail);
-        sentCase.Debtor.Phone1.ShouldBe(view.Debtor.Phone1);
-        sentCase.Debtor.Address.ShouldNotBeNull();
-        sentCase.Debtor.Address!.City.ShouldBe(view.Debtor.Address.City);
-        sentCase.Claim.ShouldNotBeNull();
-        sentCase.Claim!.ExternalRef.ShouldBe(view.Claim.ExternalRef);
-        sentCase.Claim.Amount.ShouldBe(view.Claim.Amount);
-        sentCase.Claim.Reason.ShouldBe(view.Claim.Reason);
+        AssertNaturalCaseMapped(sentCase, view);
     }
 
     /// <summary>
@@ -228,7 +158,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
                 .WithStatusCode((int)HttpStatusCode.Unauthorized)
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(JsonSerializer.Serialize(new ErrorModel { Message = expectedMessage })));
-        var view = NaturalCaseFaker.Generate();
+        var view = TilbagoFakers.NaturalCaseFaker.Generate();
 
         var ex = await Should.ThrowAsync<InvalidOperationException>(() =>
             _apiClient.CaseService.CreateNaturalPersonCaseAsync(view));
@@ -249,7 +179,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
                 .WithStatusCode((int)HttpStatusCode.OK)
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(JsonSerializer.Serialize(new CaseCreateResultView { CaseId = expectedCaseId })));
-        var view = LegalCaseFaker.Generate();
+        var view = TilbagoFakers.LegalCaseFaker.Generate();
 
         var result = await _apiClient.CaseService.CreateLegalPersonCaseAsync(view);
 
@@ -257,13 +187,16 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
     }
 
     /// <summary>
-    ///     Verifies the legal-person view's company-specific fields are mapped onto the wire payload using the camelCase
-    ///     property names defined by <c>[JsonPropertyName]</c>.
+    ///     Verifies every property of the legal-person view — required and optional — is mapped onto the wire payload
+    ///     using the camelCase property names defined by <c>[JsonPropertyName]</c>, including <c>NameAddon</c>,
+    ///     <c>Fax</c>, <c>Phone2</c>, <c>Phone3</c>, <c>PreferredLanguage</c>, <c>PayeeReference</c>,
+    ///     <c>ResponsiblePerson</c>, <c>SubsidiaryClaims</c>, <c>SourceRefEmail</c>, <c>SourceRefKey</c> and
+    ///     <c>Creditor</c>.
     /// </summary>
     [Test]
     public async Task CreateLegalPersonCaseAsync_OnSuccess_SendsPutWithLegalPersonFieldsInBody()
     {
-        var view = LegalCaseFaker.Generate();
+        var view = TilbagoFakers.LegalCaseFaker.Generate();
         Server
             .Given(Request.Create().WithPath($"{ApiPathPrefix}/case").UsingPut())
             .RespondWith(Response.Create()
@@ -286,24 +219,21 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
         body.ShouldContain("\"legalSeat\"");
         body.ShouldContain("\"contactPerson\"");
         body.ShouldContain("\"isRegistered\"");
+        body.ShouldContain("\"nameAddon\"");
+        body.ShouldContain("\"responsiblePerson\"");
+        body.ShouldContain("\"subsidiaryClaims\"");
+        body.ShouldContain("\"sourceRefEmail\"");
+        body.ShouldContain("\"sourceRefKey\"");
+        body.ShouldContain("\"payeeReference\"");
+        body.ShouldContain("\"creditor\"");
+        body.ShouldContain("\"phone2\"");
+        body.ShouldContain("\"phone3\"");
+        body.ShouldContain("\"fax\"");
+        body.ShouldContain("\"preferredLanguage\"");
 
         var sentCase = JsonSerializer.Deserialize<Case>(body);
         sentCase.ShouldNotBeNull();
-        sentCase.ExternalRef.ShouldBe(view.ExternalRef);
-        sentCase.CertificateOfLoss.ShouldBe(view.CertificateOfLoss);
-        sentCase.Debtor.ShouldNotBeNull();
-        sentCase.Debtor!.ExternalRef.ShouldBe(view.Debtor.ExternalRef);
-        sentCase.Debtor.Company.ShouldBe(view.Debtor.Company);
-        sentCase.Debtor.CompanyUid.ShouldBe(view.Debtor.CompanyUid);
-        sentCase.Debtor.LegalSeat.ShouldBe(view.Debtor.LegalSeat);
-        sentCase.Debtor.ContactPerson.ShouldBe(view.Debtor.ContactPerson);
-        sentCase.Debtor.IsRegistered.ShouldBe(view.Debtor.IsRegistered);
-        sentCase.Debtor.EMail.ShouldBe(view.Debtor.EMail);
-        sentCase.Debtor.Phone1.ShouldBe(view.Debtor.Phone1);
-        sentCase.Debtor.Address.ShouldNotBeNull();
-        sentCase.Debtor.Address!.City.ShouldBe(view.Debtor.Address.City);
-        sentCase.Claim.ShouldNotBeNull();
-        sentCase.Claim!.ExternalRef.ShouldBe(view.Claim.ExternalRef);
+        AssertLegalCaseMapped(sentCase, view);
     }
 
     /// <summary>
@@ -320,7 +250,7 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
                 .WithStatusCode((int)HttpStatusCode.PaymentRequired)
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(JsonSerializer.Serialize(new ErrorModel { Message = expectedMessage })));
-        var view = LegalCaseFaker.Generate();
+        var view = TilbagoFakers.LegalCaseFaker.Generate();
 
         var ex = await Should.ThrowAsync<InvalidOperationException>(() =>
             _apiClient.CaseService.CreateLegalPersonCaseAsync(view));
@@ -473,5 +403,163 @@ public class CaseServiceIntegrationTests : IntegrationTestBase
             _apiClient.CaseService.AddAttachmentAsync(caseId, "f.pdf", stream));
 
         ex.Message.ShouldBe(expectedMessage);
+    }
+
+    /// <summary>
+    ///     Asserts every property of a <see cref="CreateNaturalPersonCaseView" /> is mapped onto the corresponding
+    ///     <see cref="Case" /> wire payload.
+    /// </summary>
+    private static void AssertNaturalCaseMapped(Case sentCase, CreateNaturalPersonCaseView view)
+    {
+        sentCase.ExternalRef.ShouldBe(view.ExternalRef);
+        sentCase.CertificateOfLoss.ShouldBe(view.CertificateOfLoss);
+        sentCase.PayeeReference.ShouldBe(view.PayeeReference);
+        sentCase.SourceRefKey.ShouldBe(view.SourceRefKey);
+        sentCase.SourceRefEmail.ShouldBe(view.SourceRefEmail);
+
+        sentCase.ResponsiblePerson.ShouldNotBeNull();
+        sentCase.ResponsiblePerson!.Email.ShouldBe(view.ResponsiblePerson!.Email);
+
+        sentCase.SubsidiaryClaims.ShouldNotBeNull();
+        sentCase.SubsidiaryClaims!.Count.ShouldBe(view.SubsidiaryClaims!.Count);
+        for (var i = 0; i < view.SubsidiaryClaims.Count; i++)
+            AssertClaimMapped(sentCase.SubsidiaryClaims[i], view.SubsidiaryClaims[i]);
+
+        AssertCreditorMapped(sentCase.Creditor, view.Creditor);
+        AssertNaturalDebtorMapped(sentCase.Debtor, view.Debtor);
+        AssertClaimMapped(sentCase.Claim, view.Claim);
+    }
+
+    /// <summary>
+    ///     Asserts every property of a <see cref="CreateLegalPersonCaseView" /> is mapped onto the corresponding
+    ///     <see cref="Case" /> wire payload.
+    /// </summary>
+    private static void AssertLegalCaseMapped(Case sentCase, CreateLegalPersonCaseView view)
+    {
+        sentCase.ExternalRef.ShouldBe(view.ExternalRef);
+        sentCase.CertificateOfLoss.ShouldBe(view.CertificateOfLoss);
+        sentCase.PayeeReference.ShouldBe(view.PayeeReference);
+        sentCase.SourceRefKey.ShouldBe(view.SourceRefKey);
+        sentCase.SourceRefEmail.ShouldBe(view.SourceRefEmail);
+
+        sentCase.ResponsiblePerson.ShouldNotBeNull();
+        sentCase.ResponsiblePerson!.Email.ShouldBe(view.ResponsiblePerson!.Email);
+
+        sentCase.SubsidiaryClaims.ShouldNotBeNull();
+        sentCase.SubsidiaryClaims!.Count.ShouldBe(view.SubsidiaryClaims!.Count);
+        for (var i = 0; i < view.SubsidiaryClaims.Count; i++)
+            AssertClaimMapped(sentCase.SubsidiaryClaims[i], view.SubsidiaryClaims[i]);
+
+        AssertCreditorMapped(sentCase.Creditor, view.Creditor);
+        AssertLegalDebtorMapped(sentCase.Debtor, view.Debtor);
+        AssertClaimMapped(sentCase.Claim, view.Claim);
+    }
+
+    /// <summary>
+    ///     Asserts every settable property on a <see cref="DebtorNaturalPersonView" /> is reflected on the wire-side
+    ///     <see cref="Debtor" />, including phone numbers, fax, title and birth name.
+    /// </summary>
+    private static void AssertNaturalDebtorMapped(Debtor? actual, DebtorNaturalPersonView expected)
+    {
+        actual.ShouldNotBeNull();
+        actual!.ExternalRef.ShouldBe(expected.ExternalRef);
+        actual.Name.ShouldBe(expected.Name);
+        actual.Surname.ShouldBe(expected.Surname);
+        actual.Sex.ShouldBe(expected.Sex);
+        actual.DateOfBirth.ShouldBe(expected.DateOfBirth);
+        actual.BirthName.ShouldBe(expected.BirthName);
+        actual.Title.ShouldBe(expected.Title);
+        actual.Nationality.ShouldBe(expected.Nationality);
+        actual.PreferredLanguage.ShouldBe(expected.PreferredLanguage);
+        actual.EMail.ShouldBe(expected.EMail);
+        actual.Phone1.ShouldBe(expected.Phone1);
+        actual.Phone2.ShouldBe(expected.Phone2);
+        actual.Phone3.ShouldBe(expected.Phone3);
+        actual.Fax.ShouldBe(expected.Fax);
+        AssertAddressMapped(actual.Address, expected.Address);
+    }
+
+    /// <summary>
+    ///     Asserts every settable property on a <see cref="DebtorLegalPersonView" /> is reflected on the wire-side
+    ///     <see cref="Debtor" />, including <c>NameAddon</c>, phone numbers and fax.
+    /// </summary>
+    private static void AssertLegalDebtorMapped(Debtor? actual, DebtorLegalPersonView expected)
+    {
+        actual.ShouldNotBeNull();
+        actual!.ExternalRef.ShouldBe(expected.ExternalRef);
+        actual.Company.ShouldBe(expected.Company);
+        actual.CompanyUid.ShouldBe(expected.CompanyUid);
+        actual.NameAddon.ShouldBe(expected.NameAddon);
+        actual.LegalSeat.ShouldBe(expected.LegalSeat);
+        actual.ContactPerson.ShouldBe(expected.ContactPerson);
+        actual.IsRegistered.ShouldBe(expected.IsRegistered);
+        actual.PreferredLanguage.ShouldBe(expected.PreferredLanguage);
+        actual.EMail.ShouldBe(expected.EMail);
+        actual.Phone1.ShouldBe(expected.Phone1);
+        actual.Phone2.ShouldBe(expected.Phone2);
+        actual.Phone3.ShouldBe(expected.Phone3);
+        actual.Fax.ShouldBe(expected.Fax);
+        AssertAddressMapped(actual.Address, expected.Address);
+    }
+
+    /// <summary>
+    ///     Asserts the <see cref="Address" /> on the wire matches the source-of-truth address property-by-property.
+    /// </summary>
+    private static void AssertAddressMapped(Address? actual, Address? expected)
+    {
+        actual.ShouldNotBeNull();
+        expected.ShouldNotBeNull();
+        actual!.Zip.ShouldBe(expected!.Zip);
+        actual.Pob.ShouldBe(expected.Pob);
+        actual.City.ShouldBe(expected.City);
+        actual.Street.ShouldBe(expected.Street);
+        actual.StreetNumber.ShouldBe(expected.StreetNumber);
+    }
+
+    /// <summary>
+    ///     Asserts every property of a <see cref="Claim" /> survives the JSON round trip onto the wire payload.
+    /// </summary>
+    private static void AssertClaimMapped(Claim? actual, Claim expected)
+    {
+        actual.ShouldNotBeNull();
+        actual!.ExternalRef.ShouldBe(expected.ExternalRef);
+        actual.Amount.ShouldBe(expected.Amount);
+        actual.Reason.ShouldBe(expected.Reason);
+        actual.InterestDateFrom.ShouldBe(expected.InterestDateFrom);
+        actual.InterestRate.ShouldBe(expected.InterestRate);
+        actual.CollocationClass.ShouldBe(expected.CollocationClass);
+    }
+
+    /// <summary>
+    ///     Asserts every property of a <see cref="Creditor" /> survives the JSON round trip onto the wire payload —
+    ///     including <c>TradeRegisterUrl</c> and <c>Iban</c> which are unique to <see cref="Creditor" />.
+    /// </summary>
+    private static void AssertCreditorMapped(Creditor? actual, Creditor? expected)
+    {
+        actual.ShouldNotBeNull();
+        expected.ShouldNotBeNull();
+        actual!.ExternalRef.ShouldBe(expected!.ExternalRef);
+        actual.TradeRegisterUrl.ShouldBe(expected.TradeRegisterUrl);
+        actual.Iban.ShouldBe(expected.Iban);
+        actual.Name.ShouldBe(expected.Name);
+        actual.Surname.ShouldBe(expected.Surname);
+        actual.NameAddon.ShouldBe(expected.NameAddon);
+        actual.Title.ShouldBe(expected.Title);
+        actual.BirthName.ShouldBe(expected.BirthName);
+        actual.Sex.ShouldBe(expected.Sex);
+        actual.DateOfBirth.ShouldBe(expected.DateOfBirth);
+        actual.Nationality.ShouldBe(expected.Nationality);
+        actual.Company.ShouldBe(expected.Company);
+        actual.CompanyUid.ShouldBe(expected.CompanyUid);
+        actual.LegalSeat.ShouldBe(expected.LegalSeat);
+        actual.ContactPerson.ShouldBe(expected.ContactPerson);
+        actual.IsRegistered.ShouldBe(expected.IsRegistered);
+        actual.PreferredLanguage.ShouldBe(expected.PreferredLanguage);
+        actual.EMail.ShouldBe(expected.EMail);
+        actual.Phone1.ShouldBe(expected.Phone1);
+        actual.Phone2.ShouldBe(expected.Phone2);
+        actual.Phone3.ShouldBe(expected.Phone3);
+        actual.Fax.ShouldBe(expected.Fax);
+        AssertAddressMapped(actual.Address, expected.Address);
     }
 }

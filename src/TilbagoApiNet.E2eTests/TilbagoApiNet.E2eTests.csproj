@@ -26,6 +26,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\TilbagoApiNet\TilbagoApiNet.csproj" />
+        <ProjectReference Include="..\TilbagoApiNet.TestHelpers\TilbagoApiNet.TestHelpers.csproj" />
     </ItemGroup>
 
     <ItemGroup>
