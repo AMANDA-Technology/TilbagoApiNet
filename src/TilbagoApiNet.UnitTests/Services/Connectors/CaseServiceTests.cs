@@ -40,7 +40,8 @@ namespace TilbagoApiNet.UnitTests.Services.Connectors;
 
 /// <summary>
 ///     Unit tests for <see cref="CaseService" />, isolating the connector from real HTTP via a stub
-///     <see cref="HttpMessageHandler" /> wired into the substituted <see cref="ITilbagoConnectionHandler" />.
+///     <see cref="HttpMessageHandler" /> wired into the substituted
+///     <see cref="TilbagoApiNet.Interfaces.ITilbagoConnectionHandler" />.
 /// </summary>
 [TestFixture]
 public class CaseServiceTests : ServiceTestBase
@@ -120,7 +121,8 @@ public class CaseServiceTests : ServiceTestBase
 
     /// <summary>
     ///     Wires a fresh <see cref="StubHttpMessageHandler" /> behind a real <see cref="HttpClient" /> and registers it on
-    ///     the substituted <see cref="ITilbagoConnectionHandler" /> so each test sees a clean transport.
+    ///     the substituted <see cref="TilbagoApiNet.Interfaces.ITilbagoConnectionHandler" /> so each test sees a clean
+    ///     transport.
     /// </summary>
     public override void SetUp()
     {
@@ -177,7 +179,7 @@ public class CaseServiceTests : ServiceTestBase
         _handler.LastRequestBody.ShouldNotBeNullOrWhiteSpace();
         var sentCase = JsonSerializer.Deserialize<Case>(_handler.LastRequestBody!);
         sentCase.ShouldNotBeNull();
-        sentCase!.ExternalRef.ShouldBe(view.ExternalRef);
+        sentCase.ExternalRef.ShouldBe(view.ExternalRef);
         sentCase.CertificateOfLoss.ShouldBe(view.CertificateOfLoss);
         sentCase.Debtor.ShouldNotBeNull();
         sentCase.Debtor!.ExternalRef.ShouldBe(view.Debtor.ExternalRef);
@@ -249,7 +251,7 @@ public class CaseServiceTests : ServiceTestBase
         _handler.LastRequestBody.ShouldNotBeNullOrWhiteSpace();
         var sentCase = JsonSerializer.Deserialize<Case>(_handler.LastRequestBody!);
         sentCase.ShouldNotBeNull();
-        sentCase!.ExternalRef.ShouldBe(view.ExternalRef);
+        sentCase.ExternalRef.ShouldBe(view.ExternalRef);
         sentCase.CertificateOfLoss.ShouldBe(view.CertificateOfLoss);
         sentCase.Debtor.ShouldNotBeNull();
         sentCase.Debtor!.ExternalRef.ShouldBe(view.Debtor.ExternalRef);
@@ -302,7 +304,7 @@ public class CaseServiceTests : ServiceTestBase
         var status = await _service.GetStatusAsync(caseId);
 
         status.ShouldNotBeNull();
-        status!.StatusCode.ShouldBe(expectedStatus.StatusCode);
+        status.StatusCode.ShouldBe(expectedStatus.StatusCode);
         status.Description.ShouldBe(expectedStatus.Description);
         status.ESchKgCode.ShouldBe(expectedStatus.ESchKgCode);
 
