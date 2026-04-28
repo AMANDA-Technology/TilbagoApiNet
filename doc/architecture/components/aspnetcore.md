@@ -32,3 +32,7 @@ C4Component
   - Registers `ITilbagoApiClient` as Scoped.
 
 By scoping the client and connection handler, the library natively supports request-scoped scenarios common in web applications, without retaining stale connections unnecessarily.
+
+## Tests
+
+`src/TilbagoApiNet.AspNetCore.UnitTests/TilbagoServiceCollectionTests.cs` exercises both `AddTilbagoServices` overloads through a real `ServiceCollection`, asserting descriptor lifetimes (Singleton / Scoped / Scoped) and verifying that `ITilbagoApiClient` resolves to a concrete `TilbagoApiClient` for both the string-credential overload and the `ITilbagoConfiguration`-instance overload. See [the test components page](tests.md#2-tilbagoapinetaspnetcoreunittests) for details.

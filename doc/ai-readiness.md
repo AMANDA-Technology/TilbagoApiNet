@@ -17,19 +17,22 @@ tags: ["ai", "readiness", "assessment"]
 ## Section 2: Test Coverage
 
 **Assessment:**
-- **Test Framework:** NUnit across three dedicated projects (`UnitTests`, `IntegrationTests`, `E2eTests`).
-- **What IS covered:** 
+- **Test Framework:** NUnit across four test projects (`UnitTests`, `AspNetCore.UnitTests`, `IntegrationTests`, `E2eTests`) with shared Bogus fakers and mapping-assertion helpers extracted into `TilbagoApiNet.TestHelpers` (`TilbagoFakers`).
+- **What IS covered:**
+  - `src/TilbagoApiNet.UnitTests/Services/Connectors/CaseServiceTests.cs` asserts every mapped property in `CreateNaturalPersonCaseAsync` / `CreateLegalPersonCaseAsync` request bodies — including `Fax`, `Phone2`, `Phone3`, `Title`, `BirthName`, `NameAddon`, `PreferredLanguage`, `PayeeReference`, `ResponsiblePerson`, `SubsidiaryClaims`, `SourceRefEmail`, `SourceRefKey`, and `Creditor` — via stubbed `HttpMessageHandler`.
+  - `src/TilbagoApiNet.AspNetCore.UnitTests/TilbagoServiceCollectionTests.cs` covers the previously-untested `TilbagoApiNet.AspNetCore` package: both `AddTilbagoServices` overloads (string credentials and `ITilbagoConfiguration` instance), descriptor lifetimes (Singleton config, Scoped handler/client), and successful resolution of `ITilbagoApiClient`.
   - `src/TilbagoApiNet.IntegrationTests/Services/Connectors/CaseServiceIntegrationTests.cs` provides full integration coverage for `CaseService`:
     - `CreateNaturalPersonCaseAsync`
     - `CreateLegalPersonCaseAsync`
     - `GetStatusAsync`
     - `AddAttachmentAsync`
     - All error paths (400, 401, 500 status codes) mapping to `InvalidOperationException`.
+    - Wire-level assertion of every mapped field on case creation, mirroring the unit-test coverage.
   - `src/TilbagoApiNet.E2eTests/CreateCase.cs` contains End-to-End (E2E) tests covering the main happy paths (natural and legal person cases) against the live API.
 - **What is NOT covered:**
   - `CreateAsync` (raw case creation) in `CaseService`.
   - Business logic testing for potential future services.
-- **Test Quality:** The project is now structured into `UnitTests`, `IntegrationTests` (with WireMock.Net), and `E2eTests` (live Tilbago API). This limits the risk of AI agents creating garbage data when running `dotnet test`, as `E2eTests` will only execute if credentials are provided in the environment.
+- **Test Quality:** Faker definitions live in a single `TilbagoApiNet.TestHelpers.TilbagoFakers` static class consumed by `UnitTests`, `IntegrationTests`, and `E2eTests`, eliminating prior duplication and guaranteeing that all three layers exercise the same generated shapes. `E2eTests` only execute if `TilbagoApiNet__ApiKey` / `TilbagoApiNet__BaseUri` are present, so unattended `dotnet test` runs remain offline-safe.
 
 **Rate:** Baseline Coverage
 

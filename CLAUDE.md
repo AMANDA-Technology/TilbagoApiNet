@@ -12,7 +12,9 @@ TilbagoApiNet is a .NET API client implementation for the tilbago Easy-API, an o
 - `src/TilbagoApiNet`: Main library implementing the API connectors, services, and HTTP client handler.
 - `src/TilbagoApiNet.Abstractions`: Core domain models (Cases, Debtors, Creditors), views, and enums.
 - `src/TilbagoApiNet.AspNetCore`: Dependency Injection integration (`IServiceCollection` extensions) for ASP.NET Core apps.
-- `src/TilbagoApiNet.UnitTests`: NUnit tests with NSubstitute for mocking, Bogus for fake test data, and Shouldly for assertions; connector tests stub `HttpMessageHandler` for offline logic testing.
+- `src/TilbagoApiNet.TestHelpers`: Non-packed shared test infrastructure exposing `TilbagoFakers` — Bogus fakers (`AddressFaker`, `ClaimFaker`, `CreditorFaker`, `ResponsiblePersonFaker`, `DebtorNaturalFaker`, `DebtorLegalFaker`, `NaturalCaseFaker`, `LegalCaseFaker`) plus `Assert*Mapped` helpers consumed by all test projects.
+- `src/TilbagoApiNet.UnitTests`: NUnit tests with NSubstitute for mocking, Bogus for fake test data (via `TilbagoApiNet.TestHelpers`), and Shouldly for assertions; connector tests stub `HttpMessageHandler` for offline logic testing.
+- `src/TilbagoApiNet.AspNetCore.UnitTests`: NUnit tests for `TilbagoServiceCollection.AddTilbagoServices` overloads, asserting registered descriptor lifetimes (Singleton config, Scoped handler/client) and resolved types via `IServiceCollection`/`IServiceProvider`.
 - `src/TilbagoApiNet.IntegrationTests`: NUnit tests with WireMock.Net to mock the Tilbago API.
 - `src/TilbagoApiNet.E2eTests`: NUnit tests targeting the live Tilbago API, using Bogus for data generation and Shouldly for assertions.
 
@@ -52,4 +54,4 @@ This repository follows the AMANDA-Technology "ApiNet" family of patterns:
 2. **Interface:** Create a new service interface (e.g., `INewEndpointService.cs`) in `src/TilbagoApiNet/Interfaces/Connectors/`.
 3. **Implementation:** Create the class implementing the new interface (e.g., `NewEndpointService.cs`) in `src/TilbagoApiNet/Services/Connectors/`. Inject `ITilbagoConnectionHandler` in the constructor. Use `_tilbagoConnectionHandler.Client` for HTTP calls.
 4. **Registration:** Update `ITilbagoApiClient` and `TilbagoApiClient` to expose the new service as a property (e.g., `public INewEndpointService NewEndpointService { get; set; }`). Instantiate it in the constructor.
-5. **Test:** Add new test methods in `src/TilbagoApiNet.UnitTests/`, `src/TilbagoApiNet.IntegrationTests/`, and `src/TilbagoApiNet.E2eTests/` to verify behavior at all levels.erify behavior at all levels.
+5. **Test:** Add new test methods in `src/TilbagoApiNet.UnitTests/`, `src/TilbagoApiNet.IntegrationTests/`, and `src/TilbagoApiNet.E2eTests/` to verify behavior at all levels. Reuse fakers from `TilbagoApiNet.TestHelpers.TilbagoFakers` rather than redefining Bogus rules locally; if a new domain type needs faker coverage, add it to `TilbagoFakers` so all three test projects share the definition.
